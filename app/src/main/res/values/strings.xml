@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">TestApp</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_films">Films</string>
+    <string name="tab_text_favourites">Favourites</string>
+
+    <string name="add_to_favourites">Add to favourites</string>
+    <string name="remove">Remove</string>
+    <string name="share">Share</string>
+
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="error_inet_unavailable">Please turn on internet</string>
+
+    <string name="close">Close</string>
+    <string name="empty_list">Oops... The list is empty</string>
+
 </resources>
