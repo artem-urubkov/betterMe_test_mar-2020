@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.auru.betterme.ui.main
+package com.auru.betterme.presentation.main
 
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil

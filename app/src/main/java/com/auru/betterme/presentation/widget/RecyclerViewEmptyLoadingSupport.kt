@@ -1,4 +1,4 @@
-package com.auru.betterme.ui.widget
+package com.auru.betterme.presentation.widget
 
 import android.content.Context
 import android.util.AttributeSet

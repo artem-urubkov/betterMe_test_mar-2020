@@ -5,9 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.PopularItemsFragment">
+    tools:context=".presentation.main.PopularItemsFragment">
 
-    <com.auru.betterme.ui.widget.RecyclerViewEmptyLoadingSupport
+    <com.auru.betterme.presentation.widget.RecyclerViewEmptyLoadingSupport
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

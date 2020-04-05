@@ -8,6 +8,16 @@ import com.auru.betterme.injection.DataModule
 
 open class AndroidApp : Application() {
 
+    companion object{
+        lateinit var application: AndroidApp
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        application = this
+    }
+
     var component: AppComponent =
         DaggerAppComponent.builder()
             .appModule(AppModule(this))

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.auru.betterme.ui.main
+package com.auru.betterme.presentation.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
+import com.auru.betterme.database.MovieRow
 import com.auru.betterme.domain.Movie
 
 
@@ -29,7 +30,7 @@ import com.auru.betterme.domain.Movie
  * A simple ViewHolder that can bind a Movie item. It also accepts null items since the data may
  * not have been fetched before it is bound.
  */
-class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?) : RecyclerView.ViewHolder(
+class MovieViewHolder2(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.list_row, parent, false)
 ), View.OnClickListener {
 
@@ -40,13 +41,13 @@ class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: Mov
     private val removeFromFavourites = itemView.findViewById<TextView>(R.id.remove_from_favourites)
     private val share = itemView.findViewById<TextView>(R.id.share)
 
-    var movie: Movie? = null
+    var movie: MovieRow? = null
 
     /**
      * Items might be null if they are not paged in yet. PagedListAdapter will re-bind the
      * ViewHolder when Item is loaded.
      */
-    fun bindTo(movie: Movie?) {
+    fun bindTo(movie: MovieRow?) {
         this.movie = movie
         movie?.let {
             title.text = it.getName()

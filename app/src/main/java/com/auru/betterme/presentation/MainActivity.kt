@@ -1,11 +1,11 @@
-package com.auru.betterme.ui
+package com.auru.betterme.presentation
 
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import com.auru.betterme.R
-import com.auru.betterme.ui.main.PopularItemsFragment
-import com.auru.betterme.ui.main.SectionsPagerAdapter
+import com.auru.betterme.presentation.main.PopularItemsFragment
+import com.auru.betterme.presentation.main.SectionsPagerAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
 

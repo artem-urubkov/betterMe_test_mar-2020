@@ -1,4 +1,4 @@
-package com.auru.betterme.ui.main
+package com.auru.betterme.presentation.main
 
 import android.content.Context
 import androidx.fragment.app.Fragment
