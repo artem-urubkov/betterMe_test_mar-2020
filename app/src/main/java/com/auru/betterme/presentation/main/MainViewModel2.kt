@@ -7,13 +7,11 @@ import androidx.paging.PagedList
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.MovieDao
 import com.auru.betterme.domain.Movie
-import com.auru.betterme.presentation.datasource.FeedDataFactory
 import com.auru.betterme.utils.NetworkState
 import info.movito.themoviedbapi.TmdbApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import androidx.paging.toLiveData
@@ -27,12 +25,14 @@ class MainViewModel2(application: Application) : AndroidViewModel(application) {
     lateinit var movieDao: MovieDao
 
     init {
-        val application = getApplication<AndroidApp>()
-        application.component.inject(this)
+//        val application = getApplication<AndroidApp>()
+        (application as AndroidApp).component.inject(this)
 
-        init()
+//        init()
     }
 
+//    private fun init() {
+//    }
 
     val allMovies = movieDao.findAll().toLiveData(
         Config(
@@ -82,43 +82,8 @@ class MainViewModel2(application: Application) : AndroidViewModel(application) {
                 }
                 movieDao.insert(movieRows)
 
-
-                val i = 0
             }
         }
     }
 
-    //    private var executor: Executor? = null
-    private lateinit var networkState: LiveData<NetworkState>
-    private lateinit var movieLiveData: LiveData<PagedList<Movie>>
-
-
-    private val appController: AndroidApp? = null
-
-    fun getNetworkState(): LiveData<NetworkState> {
-        return networkState
-    }
-
-    fun getMovieLiveData(): LiveData<PagedList<Movie>> {
-        return movieLiveData
-    }
-
-    private fun init() {
-        val executor = Executors.newFixedThreadPool(5)
-
-        val feedDataFactory = FeedDataFactory()
-
-        networkState =
-            Transformations.switchMap(feedDataFactory.mutableLiveData) { dataSource -> dataSource.getNetworkState() }
-
-        val pagedListConfig: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(10)
-            .setPageSize(20).build()
-
-        movieLiveData = (LivePagedListBuilder(feedDataFactory, pagedListConfig)
-            .setFetchExecutor(executor)
-            .build() /*as LiveData<PagedList<Movie>>*/
-                )
-    }
 }

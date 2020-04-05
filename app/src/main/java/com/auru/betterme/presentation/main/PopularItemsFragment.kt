@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class PopularItemsFragment : Fragment() {
 
-    private val viewModel by viewModels<MainViewModel>()
     private val viewModel2 by viewModels<MainViewModel2>()
 
     //added recView
@@ -43,7 +42,7 @@ class PopularItemsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //TODO convert it to Bookmarked/Favourite fragment
-        viewModel.setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
+//        viewModel2.setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
 
         val adapter = MoviesAdapter2(movieItemClickListener)
         recyclerView.adapter = adapter
