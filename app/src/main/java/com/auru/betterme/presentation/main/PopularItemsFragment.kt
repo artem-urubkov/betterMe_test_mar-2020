@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class PopularItemsFragment : Fragment() {
 
-    private val viewModel2 by viewModels<MainViewModel2>()
+    private val viewModel2 by viewModels<MainViewModel>()
 
     //added recView
     //added paging library
@@ -44,7 +44,7 @@ class PopularItemsFragment : Fragment() {
         //TODO convert it to Bookmarked/Favourite fragment
 //        viewModel2.setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
 
-        val adapter = MoviesAdapter2(movieItemClickListener)
+        val adapter = MoviesAdapter(movieItemClickListener)
         recyclerView.adapter = adapter
         viewModel2.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
     }

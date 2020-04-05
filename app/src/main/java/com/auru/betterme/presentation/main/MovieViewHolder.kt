@@ -30,7 +30,7 @@ import com.auru.betterme.domain.Movie
  * A simple ViewHolder that can bind a Movie item. It also accepts null items since the data may
  * not have been fetched before it is bound.
  */
-class MovieViewHolder2(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?) : RecyclerView.ViewHolder(
+class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.list_row, parent, false)
 ), View.OnClickListener {
 

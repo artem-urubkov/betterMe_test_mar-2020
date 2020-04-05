@@ -19,7 +19,7 @@ import androidx.paging.Config
 import com.auru.betterme.database.MovieRow
 
 
-class MainViewModel2(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     @Inject
     lateinit var movieDao: MovieDao

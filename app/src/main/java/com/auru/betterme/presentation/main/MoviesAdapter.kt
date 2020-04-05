@@ -20,7 +20,6 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import com.auru.betterme.database.MovieRow
-import com.auru.betterme.domain.Movie
 
 /**
  * A simple PagedListAdapter that binds Movie items into CardViews.
@@ -36,13 +35,13 @@ import com.auru.betterme.domain.Movie
  * @see androidx.paging.PagedListAdapter
  * @see androidx.paging.AsyncPagedListDiffer
  */
-class MoviesAdapter2(private val movieItemClickListener: MovieItemClickListener?) :
-    PagedListAdapter<MovieRow, MovieViewHolder2>(diffCallback) {
+class MoviesAdapter(private val movieItemClickListener: MovieItemClickListener?) :
+    PagedListAdapter<MovieRow, MovieViewHolder>(diffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder2 =
-        MovieViewHolder2(parent, movieItemClickListener)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder =
+        MovieViewHolder(parent, movieItemClickListener)
 
-    override fun onBindViewHolder(holder: MovieViewHolder2, position: Int) {
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.bindTo(getItem(position))
     }
 
