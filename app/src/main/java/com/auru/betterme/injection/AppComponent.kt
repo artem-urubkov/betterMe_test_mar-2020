@@ -1,6 +1,7 @@
 package com.auru.betterme.injection
 
-import com.auru.betterme.presentation.main.MainViewModel
+import com.auru.betterme.presentation.favormovies.FavouriteMoviesViewModel
+import com.auru.betterme.presentation.movies.MoviesViewModel
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,5 +13,6 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent {
-    fun inject(mainViewModel: MainViewModel)
+    fun inject(moviesViewModel: MoviesViewModel)
+    fun inject(moviesViewModel: FavouriteMoviesViewModel)
 }

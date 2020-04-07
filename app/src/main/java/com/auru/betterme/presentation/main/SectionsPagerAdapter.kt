@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.auru.betterme.R
+import com.auru.betterme.presentation.favormovies.FavouriteMoviesFragment
 import com.auru.betterme.presentation.movies.PopularItemsFragment
 
 private val TAB_TITLES = arrayOf(
@@ -22,13 +23,9 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
     override fun getItem(position: Int): Fragment =
         when(position){
             0 -> PopularItemsFragment.newInstance()
-//                1->
+            1-> FavouriteMoviesFragment.newInstance()
             else -> PopularItemsFragment.newInstance()
         }
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-//        return PopularItemsFragment.newInstance(position + 1)
-
 
     override fun getPageTitle(position: Int): CharSequence? {
         return context.resources.getString(TAB_TITLES[position])

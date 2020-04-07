@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.favormovies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.auru.betterme.R
+import com.auru.betterme.database.FavouriteMovieRow
 import com.auru.betterme.database.MovieRow
 import com.auru.betterme.database.MovieRowInterface
 import com.auru.betterme.presentation.base.MovieItemClickListenerExt
+import com.auru.betterme.presentation.movies.MoviesViewModel
+import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
-class PopularItemsFragment : Fragment() {
+class FavouriteMoviesFragment : Fragment() {
 
-    private val viewModel by viewModels<MoviesViewModel>()
+    private val viewModel by viewModels<FavouriteMoviesViewModel>()
 
     //added recView
     //added paging library
@@ -37,7 +40,7 @@ class PopularItemsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = MoviePagedListAdapter<MovieRow>(
+        val adapter = MoviePagedListAdapter<FavouriteMovieRow>(
             movieItemClickListener
         )
         recyclerView.adapter = adapter
@@ -45,23 +48,19 @@ class PopularItemsFragment : Fragment() {
     }
 
 
-    fun getMovies() {
-        viewModel.getMovies()
-    }
-
     val movieItemClickListener = object :
         MovieItemClickListenerExt {
         override fun onClick(view: View?, movie: MovieRowInterface?) {
+            //TODO get rid of nullability here
             if (view != null && movie != null) {
                 when (view.id) {
-                    R.id.add_to_favourites -> {
+                    R.id.remove_from_favourites -> {
                         Toast.makeText(
                             activity?.applicationContext,
-                            "add_to_favour",
+                            "remove_from_favour",
                             Toast.LENGTH_LONG
                         ).show()
-
-                        viewModel.addToFavourites(movie as MovieRow)
+                        viewModel.removeFromFavourites((movie as FavouriteMovieRow))
                     }
 //                  TODO R.id.share ->
                 }
@@ -81,10 +80,10 @@ class PopularItemsFragment : Fragment() {
          * number.
          */
         @JvmStatic
-        fun newInstance(/*sectionNumber: Int*/): PopularItemsFragment {
-            return PopularItemsFragment().apply {
+        fun newInstance(): FavouriteMoviesFragment {
+            return FavouriteMoviesFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_SECTION_NUMBER, 0)
+                    putInt(ARG_SECTION_NUMBER, 1)
                 }
             }
         }

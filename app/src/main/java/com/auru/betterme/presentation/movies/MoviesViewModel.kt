@@ -1,22 +1,24 @@
-package com.auru.betterme.presentation.main
+package com.auru.betterme.presentation.movies
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Config
 import androidx.paging.toLiveData
 import com.auru.betterme.*
 import com.auru.betterme.database.FavouriteMovieDao
-import com.auru.betterme.database.FavouriteMovieRow
 import com.auru.betterme.database.MovieDao
 import com.auru.betterme.database.MovieRow
 import com.auru.betterme.domain.MoviesMapperAndValidator
+import com.auru.betterme.presentation.base.PagingConfig
 import info.movito.themoviedbapi.TmdbApi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MoviesViewModel(application: Application) : AndroidViewModel(application) {
 
     @Inject
     lateinit var movieDao: MovieDao
@@ -24,46 +26,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var favorMovieDao: FavouriteMovieDao
 
     init {
-//        val application = getApplication<AndroidApp>()
         (application as AndroidApp).component.inject(this)
-
-//        init()
     }
 
-//    private fun init() {
-//    }
+    val allMovies = movieDao.findAll().toLiveData(PagingConfig.config)
 
-    val allMovies = movieDao.findAll().toLiveData(
-        Config(
-            /**
-             * A good page size is a value that fills at least a screen worth of content on a large
-             * device so the User is unlikely to see a null item.
-             * You can play with this constant to observe the paging behavior.
-             * <p>
-             * It's possible to vary this with list device size, but often unnecessary, unless a
-             * user scrolling on a large device is expected to scroll through items more quickly
-             * than a small device, such as when the large device uses a grid layout of items.
-             */
-            pageSize = 20,
-
-            /**
-             * If placeholders are enabled, PagedList will report the full size but some items might
-             * be null in onBind method (PagedListAdapter triggers a rebind when data is loaded).
-             * <p>
-             * If placeholders are disabled, onBind will never receive null but as more pages are
-             * loaded, the scrollbars will jitter as new pages are loaded. You should probably
-             * disable scrollbars if you disable placeholders.
-             */
-            enablePlaceholders = true,
-
-            /**
-             * Maximum number of items a PagedList should hold in memory at once.
-             * <p>
-             * This number triggers the PagedList to start dropping distant pages as more are loaded.
-             */
-            maxSize = 200
-        )
-    )
 
     //TODO rename, maybe move this method somewhere
     fun getMovies() {
@@ -79,7 +46,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                 movieDao.deleteAll()
 
-                val popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
+                var popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
                 var totalMoviesSize = popularMovies.totalResults
 
                 while (currentIndex < totalMoviesSize && currentIndex < MOVIES_NUMBER_LIMIT) {
@@ -87,7 +54,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val moviesToPersist = mutableListOf<MovieRow>()
                     //processing by portions of about 1000 elements
                     do {
-                        val popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
+                        popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
                         currentPage += 1
                         totalMoviesSize = popularMovies.totalResults
 
@@ -140,13 +107,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun removeFromFavourites(movie: FavouriteMovieRow) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                favorMovieDao.delete(movie)
-            } catch (e: Exception) {
-                //TODO post error
-            }
-        }
-    }
 }
