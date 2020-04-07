@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.auru.betterme.R
+import com.auru.betterme.presentation.movies.PopularItemsFragment
 
 private val TAB_TITLES = arrayOf(
         R.string.tab_text_films,

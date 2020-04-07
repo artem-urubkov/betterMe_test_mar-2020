@@ -2,8 +2,6 @@ package com.auru.betterme.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.auru.betterme.domain.Movie
-import info.movito.themoviedbapi.model.MovieDb
 
 /**
  * We need this table due to downloads pagination.
@@ -17,7 +15,7 @@ import info.movito.themoviedbapi.model.MovieDb
  *
  */
 @Entity(tableName = "favour_movies")
-data class FavouriteMovieRow ( //because data classes are incompatible with inheritance and lead to errors with Room if using workarounds (((
+data class FavouriteMovieRow( //because data classes are incompatible with inheritance and lead to errors with Room if using workarounds (((
     @PrimaryKey
     val id: Int,
     val name: String,
@@ -25,4 +23,6 @@ data class FavouriteMovieRow ( //because data classes are incompatible with inhe
     val posterPath: String?,
     val releaseDate: String?,
     val timestamp: Long
-)
+) : MovieRowInterface {
+    override fun getShownName(): String = name
+}

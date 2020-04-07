@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
  * no primary_key provided because all valuable fields are nullable + id has no sense
  */
 @Entity(tableName = "movies")
-data class MovieRow (
+data class MovieRow(
     @PrimaryKey
     val id: Int,
     val name: String,
@@ -15,4 +15,6 @@ data class MovieRow (
     val posterPath: String?,
     val releaseDate: String?,
     val timestamp: Long
-)
+) : MovieRowInterface {
+    override fun getShownName(): String = name
+}

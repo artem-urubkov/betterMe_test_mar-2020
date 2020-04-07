@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.auru.betterme.presentation.main
+package com.auru.betterme.presentation.movies
 
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
 import com.auru.betterme.database.MovieRow
+import com.auru.betterme.presentation.main.MovieItemClickListener
 
 
 /**

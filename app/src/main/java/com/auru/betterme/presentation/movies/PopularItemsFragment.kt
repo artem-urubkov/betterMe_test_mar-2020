@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.main
+package com.auru.betterme.presentation.movies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import com.auru.betterme.R
 import com.auru.betterme.database.MovieRow
+import com.auru.betterme.database.MovieRowInterface
+import com.auru.betterme.presentation.base.MovieItemClickListenerExt
+import com.auru.betterme.presentation.main.MainViewModel
+import com.auru.betterme.presentation.main.MovieItemClickListener
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class PopularItemsFragment : Fragment() {
@@ -46,7 +50,12 @@ class PopularItemsFragment : Fragment() {
         //TODO convert it to Bookmarked/Favourite fragment
 //        viewModel2.setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
 
-        val adapter = MoviesAdapter(movieItemClickListener)
+//        val adapter = MoviesAdapter(
+//            movieItemClickListener
+//        )
+        val adapter = MoviePagedListAdapter<MovieRow>(
+            movieItemClickListener
+        )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
     }
@@ -56,8 +65,9 @@ class PopularItemsFragment : Fragment() {
         viewModel.getMovies()
     }
 
-    val movieItemClickListener = object : MovieItemClickListener {
-        override fun onClick(view: View?, movie: MovieRow?) {
+    val movieItemClickListener = object :
+        MovieItemClickListenerExt {
+        override fun onClick(view: View?, movie: MovieRowInterface?) {
             //TODO get rid of nullability here
             if (view != null && movie != null) {
                 when (view.id) {
@@ -68,7 +78,7 @@ class PopularItemsFragment : Fragment() {
                             Toast.LENGTH_LONG
                         ).show()
 
-                        viewModel.addToFavourites(movie)
+                        viewModel.addToFavourites(movie as MovieRow)
                     }
                     R.id.remove_from_favourites ->
                     {
