@@ -25,7 +25,6 @@ import com.auru.betterme.R
 import com.auru.betterme.database.FavouriteMovieRow
 import com.auru.betterme.database.MovieRow
 import com.auru.betterme.database.MovieRowInterface
-import com.auru.betterme.domain.MovieSealed
 
 
 /**
