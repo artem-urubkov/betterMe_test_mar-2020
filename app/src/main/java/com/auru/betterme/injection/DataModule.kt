@@ -2,6 +2,7 @@ package com.auru.betterme.injection
 
 import android.content.Context
 import androidx.room.Room
+import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.MovieDao
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.utils.CoroutineContextProvider
@@ -24,6 +25,12 @@ open class DataModule {
             .build()
 
     @Provides
-    fun provideScheduleDayDao(database: MoviesDatabase): MovieDao =
+    @Singleton
+    fun provideMovieDao(database: MoviesDatabase): MovieDao =
         database.movieDao()
+
+    @Provides
+    @Singleton
+    fun provideFavouriteMovieDao(database: MoviesDatabase): FavouriteMovieDao =
+        database.favouriteMovieDao()
 }

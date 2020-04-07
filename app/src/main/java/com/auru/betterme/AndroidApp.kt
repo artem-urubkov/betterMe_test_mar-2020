@@ -5,6 +5,7 @@ import com.auru.betterme.injection.AppComponent
 import com.auru.betterme.injection.AppModule
 import com.auru.betterme.injection.DaggerAppComponent
 import com.auru.betterme.injection.DataModule
+import com.facebook.stetho.Stetho
 
 open class AndroidApp : Application() {
 
@@ -16,6 +17,9 @@ open class AndroidApp : Application() {
         super.onCreate()
 
         application = this
+
+        //TODO if(BuildConfig.isDebug); try to log networking of MoviesDbAPI
+        Stetho.initializeWithDefaults(this)
     }
 
     var component: AppComponent =

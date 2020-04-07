@@ -23,14 +23,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
 import com.auru.betterme.database.MovieRow
-import com.auru.betterme.domain.Movie
 
 
 /**
  * A simple ViewHolder that can bind a Movie item. It also accepts null items since the data may
  * not have been fetched before it is bound.
  */
-class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?) : RecyclerView.ViewHolder(
+class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: MovieItemClickListener?, private val isFavourite: Boolean) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.list_row, parent, false)
 ), View.OnClickListener {
 
@@ -50,15 +49,15 @@ class MovieViewHolder(parent: ViewGroup, private val movieItemClickListener: Mov
     fun bindTo(movie: MovieRow?) {
         this.movie = movie
         movie?.let {
-            title.text = it.getName()
+            title.text = it.name
             description.text = it.overview ?: ""
 
             addToFavourites.setOnClickListener(this)
             removeFromFavourites.setOnClickListener(this)
             share.setOnClickListener(this)
 
-            addToFavourites.visibility = if (!it.isFavourite) View.VISIBLE else View.GONE
-            removeFromFavourites.visibility = if (it.isFavourite) View.VISIBLE else View.GONE
+            addToFavourites.visibility = if (!isFavourite) View.VISIBLE else View.GONE
+            removeFromFavourites.visibility = if (isFavourite) View.VISIBLE else View.GONE
         }
     }
 

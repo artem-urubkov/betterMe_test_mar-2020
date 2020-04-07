@@ -39,7 +39,7 @@ class MoviesAdapter(private val movieItemClickListener: MovieItemClickListener?)
     PagedListAdapter<MovieRow, MovieViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder =
-        MovieViewHolder(parent, movieItemClickListener)
+        MovieViewHolder(parent, movieItemClickListener, false)
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.bindTo(getItem(position))

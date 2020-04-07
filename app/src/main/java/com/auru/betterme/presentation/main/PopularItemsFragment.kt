@@ -14,13 +14,15 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class PopularItemsFragment : Fragment() {
 
-    private val viewModel2 by viewModels<MainViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
 
     //added recView
     //added paging library
     //added retrieving from DB
     //TODO divide to simple and favourites
 //    private lateinit var pageViewModel: MainViewModel
+
+    //TODO bind swipe-to-refresh
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,12 +48,12 @@ class PopularItemsFragment : Fragment() {
 
         val adapter = MoviesAdapter(movieItemClickListener)
         recyclerView.adapter = adapter
-        viewModel2.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
+        viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
     }
 
 
     fun getMovies() {
-        viewModel2.getMovies()
+        viewModel.getMovies()
     }
 
     val movieItemClickListener = object : MovieItemClickListener {
@@ -59,16 +61,24 @@ class PopularItemsFragment : Fragment() {
             //TODO get rid of nullability here
             if (view != null && movie != null) {
                 when (view.id) {
-                    R.id.add_to_favourites -> Toast.makeText(
-                        activity?.applicationContext,
-                        "add_to_favour",
-                        Toast.LENGTH_LONG
-                    ).show()//pageViewModel.addToFavourites(movie)
-                    R.id.remove_from_favourites -> Toast.makeText(
-                        activity?.applicationContext,
-                        "remove_from_favour",
-                        Toast.LENGTH_LONG
-                    ).show()//pageViewModel.removeFromFavourites(movie)
+                    R.id.add_to_favourites -> {
+                        Toast.makeText(
+                            activity?.applicationContext,
+                            "add_to_favour",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        viewModel.addToFavourites(movie)
+                    }
+                    R.id.remove_from_favourites ->
+                    {
+                        Toast.makeText(
+                            activity?.applicationContext,
+                            "remove_from_favour",
+                            Toast.LENGTH_LONG
+                        ).show()
+//                        viewModel.removeFromFavourites(movie)
+                    }
 //                  TODO R.id.share ->
                 }
             }
