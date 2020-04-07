@@ -17,13 +17,5 @@ class MainActivity : AppCompatActivity() {
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         view_pager.adapter = sectionsPagerAdapter
         tabs.setupWithViewPager(view_pager)
-
-        fab.setOnClickListener { view ->
-            //TODO
-            val f = supportFragmentManager.fragments[0]
-            (f as PopularItemsFragment).getMovies()
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
     }
 }

@@ -5,13 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
 import com.auru.betterme.database.MovieRow
 import com.auru.betterme.database.MovieRowInterface
 import com.auru.betterme.presentation.base.MovieItemClickListenerExt
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class PopularItemsFragment : Fragment() {
@@ -21,16 +25,16 @@ class PopularItemsFragment : Fragment() {
     //added recView
     //added paging library
     //added retrieving from DB
-    //TODO divide to simple and favourites
-//    private lateinit var pageViewModel: MainViewModel
 
-    //TODO bind swipe-to-refresh
+    //TODO process exceptions
+
+    private var errorSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_main, container, false)
+        val root = inflater.inflate(R.layout.fragment_movies, container, false)
         return root
     }
 
@@ -42,14 +46,19 @@ class PopularItemsFragment : Fragment() {
         )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
+
+        swipe_refresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+            errorSnackbar?.let {
+                if (it.isShown) {
+                    it.dismiss()
+                }
+            }
+            swipe_refresh.isRefreshing = false
+            viewModel.getMovies()
+        })
     }
 
-
-    fun getMovies() {
-        viewModel.getMovies()
-    }
-
-    val movieItemClickListener = object :
+    private val movieItemClickListener = object :
         MovieItemClickListenerExt {
         override fun onClick(view: View?, movie: MovieRowInterface?) {
             if (view != null && movie != null) {
@@ -66,6 +75,17 @@ class PopularItemsFragment : Fragment() {
 //                  TODO R.id.share ->
                 }
             }
+        }
+    }
+
+    private fun showErrorSnackBar(message: String) {
+        errorSnackbar =
+            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
+
+        errorSnackbar?.apply {
+            setAction(R.string.close) {}
+            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
+                .show()
         }
     }
 

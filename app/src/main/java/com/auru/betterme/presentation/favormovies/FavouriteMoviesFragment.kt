@@ -8,13 +8,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
 import com.auru.betterme.database.FavouriteMovieRow
-import com.auru.betterme.database.MovieRow
 import com.auru.betterme.database.MovieRowInterface
 import com.auru.betterme.presentation.base.MovieItemClickListenerExt
-import com.auru.betterme.presentation.movies.MoviesViewModel
 import com.auru.betterme.presentation.movies.MoviePagedListAdapter
+import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
 class FavouriteMoviesFragment : Fragment() {
@@ -23,17 +23,12 @@ class FavouriteMoviesFragment : Fragment() {
 
     //added recView
     //added paging library
-    //added retrieving from DB
-    //TODO divide to simple and favourites
-//    private lateinit var pageViewModel: MainViewModel
-
-    //TODO bind swipe-to-refresh
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_main, container, false)
+        val root = inflater.inflate(R.layout.fragment_movies, container, false)
         return root
     }
 
@@ -45,10 +40,15 @@ class FavouriteMoviesFragment : Fragment() {
         )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
+
+        swipe_refresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+            //just show user that the list is always up-to-date
+            swipe_refresh.isRefreshing = false
+        })
     }
 
 
-    val movieItemClickListener = object :
+    private val movieItemClickListener = object :
         MovieItemClickListenerExt {
         override fun onClick(view: View?, movie: MovieRowInterface?) {
             //TODO get rid of nullability here
