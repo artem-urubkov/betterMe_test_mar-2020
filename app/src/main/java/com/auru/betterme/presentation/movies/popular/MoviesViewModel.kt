@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.movies.popular
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -7,9 +7,9 @@ import androidx.paging.toLiveData
 import com.auru.betterme.*
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.MovieDao
-import com.auru.betterme.database.MovieRow
+import com.auru.betterme.database.domain.MovieRow
 import com.auru.betterme.domain.MoviesMapperAndValidator
-import com.auru.betterme.presentation.base.PagingConfig
+import com.auru.betterme.presentation.movies.PagingConfig
 import info.movito.themoviedbapi.TmdbApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

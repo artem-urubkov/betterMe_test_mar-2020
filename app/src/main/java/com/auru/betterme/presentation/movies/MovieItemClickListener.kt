@@ -1,7 +1,7 @@
-package com.auru.betterme.presentation.base
+package com.auru.betterme.presentation.movies
 
 import android.view.View
-import com.auru.betterme.database.MovieRowInterface
+import com.auru.betterme.database.domain.MovieRowInterface
 
 interface MovieItemClickListener {
     fun onClick(view: View?, movie: MovieRowInterface?)

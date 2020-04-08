@@ -1,4 +1,4 @@
-package com.auru.betterme.database
+package com.auru.betterme.database.domain
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

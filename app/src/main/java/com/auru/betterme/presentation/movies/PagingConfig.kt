@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.base
+package com.auru.betterme.presentation.movies
 
 import androidx.paging.Config
 

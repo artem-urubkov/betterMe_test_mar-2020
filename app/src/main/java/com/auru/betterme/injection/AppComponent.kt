@@ -1,7 +1,7 @@
 package com.auru.betterme.injection
 
-import com.auru.betterme.presentation.favormovies.FavouriteMoviesViewModel
-import com.auru.betterme.presentation.movies.MoviesViewModel
+import com.auru.betterme.presentation.movies.favourite.FavouriteMoviesViewModel
+import com.auru.betterme.presentation.movies.popular.MoviesViewModel
 import dagger.Component
 import javax.inject.Singleton
 

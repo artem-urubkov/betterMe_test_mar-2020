@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.favormovies
+package com.auru.betterme.presentation.movies.favourite
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
-import com.auru.betterme.database.FavouriteMovieRow
-import com.auru.betterme.database.MovieRowInterface
-import com.auru.betterme.presentation.base.MovieItemClickListener
-import com.auru.betterme.presentation.base.MoviePagedListAdapter
+import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.presentation.movies.MovieItemClickListener
+import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
@@ -64,6 +64,7 @@ class FavouriteMoviesFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = FavouriteMoviesFragment()
+        fun newInstance() =
+            FavouriteMoviesFragment()
     }
 }

@@ -3,7 +3,7 @@ package com.auru.betterme.presentation
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.auru.betterme.R
-import com.auru.betterme.presentation.main.SectionsPagerAdapter
+import com.auru.betterme.presentation.base.SectionsPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

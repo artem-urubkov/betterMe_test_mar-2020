@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.movies.popular
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
-import com.auru.betterme.database.MovieRow
-import com.auru.betterme.database.MovieRowInterface
-import com.auru.betterme.presentation.base.MovieItemClickListener
-import com.auru.betterme.presentation.base.MoviePagedListAdapter
+import com.auru.betterme.database.domain.MovieRow
+import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.presentation.movies.MovieItemClickListener
+import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
@@ -86,6 +86,7 @@ class PopularMoviesFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = PopularMoviesFragment()
+        fun newInstance() =
+            PopularMoviesFragment()
     }
 }

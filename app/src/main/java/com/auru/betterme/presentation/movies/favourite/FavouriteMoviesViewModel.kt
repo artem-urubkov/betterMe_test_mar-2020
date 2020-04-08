@@ -1,12 +1,12 @@
-package com.auru.betterme.presentation.favormovies
+package com.auru.betterme.presentation.movies.favourite
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.paging.toLiveData
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.FavouriteMovieDao
-import com.auru.betterme.database.FavouriteMovieRow
-import com.auru.betterme.presentation.base.PagingConfig
+import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.presentation.movies.PagingConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

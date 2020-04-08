@@ -2,6 +2,7 @@ package com.auru.betterme.database
 
 import androidx.paging.DataSource
 import androidx.room.*
+import com.auru.betterme.database.domain.FavouriteMovieRow
 
 /**
  * Database Access Object for the Movies database.

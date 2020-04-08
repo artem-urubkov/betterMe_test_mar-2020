@@ -1,7 +1,7 @@
 package com.auru.betterme.domain
 
-import com.auru.betterme.database.FavouriteMovieRow
-import com.auru.betterme.database.MovieRow
+import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.database.domain.MovieRow
 import info.movito.themoviedbapi.model.MovieDb
 
 class MoviesMapperAndValidator {
@@ -19,7 +19,14 @@ class MoviesMapperAndValidator {
 
         //TODO refactor between Movie and MovieRow
         fun convertMovieDBToMovieRow(m: MovieDb, id: Int, timeStamp: Long) =
-            MovieRow(id, getName(m), m.overview, m.posterPath, m.releaseDate, timeStamp)
+            MovieRow(
+                id,
+                getName(m),
+                m.overview,
+                m.posterPath,
+                m.releaseDate,
+                timeStamp
+            )
 
         private fun getName(m: MovieDb) = if (!m.title.isNullOrBlank()) m.title else m.originalTitle ?: ""
 
