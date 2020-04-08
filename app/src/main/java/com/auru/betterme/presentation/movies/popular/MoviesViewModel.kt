@@ -1,6 +1,7 @@
 package com.auru.betterme.presentation.movies.popular
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.toLiveData
@@ -11,6 +12,7 @@ import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.domain.MoviesMapperAndValidator
 import com.auru.betterme.presentation.movies.PagingConfig
 import info.movito.themoviedbapi.TmdbApi
+import info.movito.themoviedbapi.TmdbMovies
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +21,11 @@ import javax.inject.Inject
 
 
 class MoviesViewModel(application: Application) : AndroidViewModel(application) {
+
+    companion object{
+        val LOG_TAG = MoviesViewModel::class.java.simpleName
+    }
+
 
     @Inject
     lateinit var movieDao: MovieDao
@@ -40,13 +47,13 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                 //TODO process exceptions
 
                 val currentSyncTimestamp = System.currentTimeMillis()
-                val moviesFromBE = TmdbApi(API_KEY).movies
+                val moviesApi = TmdbApi(API_KEY).movies
                 var currentIndex = 0
                 var currentPage = API_START_POSITION
 
                 movieDao.deleteAll()
 
-                var popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
+                var popularMovies = moviesApi.getPopularMovies(API_LANGUAGE, currentPage)
                 var totalMoviesSize = popularMovies.totalResults
 
                 while (currentIndex < totalMoviesSize && currentIndex < MOVIES_NUMBER_LIMIT) {
@@ -54,7 +61,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                     val moviesToPersist = mutableListOf<Movie>()
                     //processing by portions of about 1000 elements
                     do {
-                        popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
+                        popularMovies = moviesApi.getPopularMovies(API_LANGUAGE, currentPage)
                         currentPage += 1
                         totalMoviesSize = popularMovies.totalResults
 
@@ -67,6 +74,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                                 continue
                             }
 
+                            Log.d(LOG_TAG, "currIndex = $currentIndex")
                             val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
                                 movieDb,
                                 currentIndex,
@@ -76,6 +84,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                             //collecting movies to persist
                             moviesToPersist.add(movie)
                             currentIndex++
+                            //FIXME resolve error with non-unique currentIndex-"id" - ah, just cancel the previous coroutine-Job
                         }
                         //todo DRY condition
                     } while (currentIndex < initialIndex + MOVIES_PERSIST_PORTION_NUMBER && currentIndex <= totalMoviesSize && currentIndex <= MOVIES_NUMBER_LIMIT)

@@ -36,7 +36,8 @@ class FavouriteMoviesFragment : Fragment() {
 
         val adapter =
             MoviePagedListAdapter<FavouriteMovie>(
-                movieItemClickListener
+                movieItemClickListener,
+                this
             )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }

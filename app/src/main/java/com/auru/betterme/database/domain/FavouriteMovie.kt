@@ -18,11 +18,12 @@ import androidx.room.PrimaryKey
 data class FavouriteMovie( //because data classes are incompatible with inheritance and lead to errors with Room if using workarounds (((
     @PrimaryKey
     val id: Int,
+    val backEndId: Int,
     val name: String,
     val overview: String?,
     val posterPath: String?,
     val releaseDate: String?,
     val timestamp: Long
 ) : MovieRowInterface {
-    override fun getShownName(): String = name
+    override fun getBEndId(): Int = backEndId
 }

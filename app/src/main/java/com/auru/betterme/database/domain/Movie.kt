@@ -10,11 +10,12 @@ import androidx.room.PrimaryKey
 data class Movie(
     @PrimaryKey
     val id: Int,
+    val backEndId: Int,
     val name: String,
     val overview: String?,
     val posterPath: String?,
     val releaseDate: String?,
     val timestamp: Long
 ) : MovieRowInterface {
-    override fun getShownName(): String = name
+    override fun getBEndId(): Int = backEndId
 }

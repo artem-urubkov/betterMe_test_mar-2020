@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/padding"
         android:elevation="3dp"
         app:cardCornerRadius="@dimen/padding_small"
         app:contentPadding="@dimen/padding"
@@ -24,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="60dp"
+                android:layout_height="90dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_launcher_foreground" />

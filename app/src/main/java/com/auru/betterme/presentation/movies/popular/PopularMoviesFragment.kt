@@ -43,7 +43,8 @@ class PopularMoviesFragment : Fragment() {
 
         val adapter =
             MoviePagedListAdapter<Movie>(
-                movieItemClickListener
+                movieItemClickListener,
+                this
             )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }

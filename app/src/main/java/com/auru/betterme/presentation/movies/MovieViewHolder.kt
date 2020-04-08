@@ -19,12 +19,15 @@ package com.auru.betterme.presentation.movies
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.database.domain.MovieRowInterface
+import com.bumptech.glide.Glide
 
 
 /**
@@ -33,7 +36,8 @@ import com.auru.betterme.database.domain.MovieRowInterface
  */
 open class MovieViewHolder(
     parent: ViewGroup,
-    private val movieItemClickListener: MovieItemClickListener?
+    private val movieItemClickListener: MovieItemClickListener?,
+    private val fragment: Fragment
 ) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.list_row, parent, false)
 ), View.OnClickListener {
@@ -41,6 +45,7 @@ open class MovieViewHolder(
     //TODO how to apply synthetic here?
     private val title = itemView.findViewById<TextView>(R.id.title)
     private val description = itemView.findViewById<TextView>(R.id.description)
+    private val poster = itemView.findViewById<ImageView>(R.id.imageView)
     private val addToFavourites = itemView.findViewById<TextView>(R.id.add_to_favourites)
     private val removeFromFavourites = itemView.findViewById<TextView>(R.id.remove_from_favourites)
     private val share = itemView.findViewById<TextView>(R.id.share)
@@ -64,6 +69,10 @@ open class MovieViewHolder(
                     movie.let {
                         title.text = it.name
                         description.text = it.overview ?: ""
+                        Glide.with(fragment)
+                            .load(it.posterPath)
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .into(poster)
                         addToFavourites.visibility = View.VISIBLE
                         removeFromFavourites.visibility = View.GONE
                     }
@@ -72,6 +81,10 @@ open class MovieViewHolder(
                     movie.let {
                         title.text = it.name
                         description.text = it.overview ?: ""
+                        Glide.with(fragment)
+                            .load(it.posterPath)
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .into(poster)
                         addToFavourites.visibility = View.GONE
                         removeFromFavourites.visibility = View.VISIBLE
                     }
