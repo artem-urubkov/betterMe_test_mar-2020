@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
  * no primary_key provided because all valuable fields are nullable + id has no sense
  */
 @Entity(tableName = "movies")
-data class MovieRow(
+data class Movie(
     @PrimaryKey
     val id: Int,
     val name: String,

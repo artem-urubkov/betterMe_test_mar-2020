@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
-import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.MovieRowInterface
 import com.auru.betterme.presentation.movies.MovieItemClickListener
 import com.auru.betterme.presentation.movies.MoviePagedListAdapter
@@ -35,7 +35,7 @@ class FavouriteMoviesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter =
-            MoviePagedListAdapter<FavouriteMovieRow>(
+            MoviePagedListAdapter<FavouriteMovie>(
                 movieItemClickListener
             )
         recyclerView.adapter = adapter
@@ -54,7 +54,7 @@ class FavouriteMoviesFragment : Fragment() {
             if (view != null && movie != null) {
                 when (view.id) {
                     R.id.remove_from_favourites -> {
-                        viewModel.removeFromFavourites((movie as FavouriteMovieRow))
+                        viewModel.removeFromFavourites((movie as FavouriteMovie))
                     }
 //                  TODO R.id.share ->
                 }

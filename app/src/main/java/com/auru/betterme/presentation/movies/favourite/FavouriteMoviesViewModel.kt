@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.paging.toLiveData
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.FavouriteMovieDao
-import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.presentation.movies.PagingConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ class FavouriteMoviesViewModel(application: Application) : AndroidViewModel(appl
     val allMovies = favorMovieDao.findAll().toLiveData(PagingConfig.config)
 
 
-    fun removeFromFavourites(movie: FavouriteMovieRow) {
+    fun removeFromFavourites(movie: FavouriteMovie) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 favorMovieDao.delete(movie)

@@ -22,8 +22,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
-import com.auru.betterme.database.domain.FavouriteMovieRow
-import com.auru.betterme.database.domain.MovieRow
+import com.auru.betterme.database.domain.FavouriteMovie
+import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.database.domain.MovieRowInterface
 
 
@@ -60,7 +60,7 @@ open class MovieViewHolder(
 
             //repeating because Kotlin data classes are not inheritable
             when (movie) {
-                is MovieRow -> {
+                is Movie -> {
                     movie.let {
                         title.text = it.name
                         description.text = it.overview ?: ""
@@ -68,7 +68,7 @@ open class MovieViewHolder(
                         removeFromFavourites.visibility = View.GONE
                     }
                 }
-                is FavouriteMovieRow -> {
+                is FavouriteMovie -> {
                     movie.let {
                         title.text = it.name
                         description.text = it.overview ?: ""

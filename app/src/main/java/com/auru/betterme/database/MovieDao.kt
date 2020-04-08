@@ -2,7 +2,7 @@ package com.auru.betterme.database
 
 import androidx.paging.DataSource
 import androidx.room.*
-import com.auru.betterme.database.domain.MovieRow
+import com.auru.betterme.database.domain.Movie
 
 /**
  * Database Access Object for the Movies database.
@@ -14,10 +14,10 @@ interface MovieDao {
      * it back to UI via ViewModel.
      */
     @Query("SELECT * FROM movies")
-    fun findAll(): DataSource.Factory<Int, MovieRow>
+    fun findAll(): DataSource.Factory<Int, Movie>
 
     @Insert
-    fun insert(movies: List<MovieRow>)
+    fun insert(movies: List<Movie>)
 
 
     @Query("DELETE FROM movies")

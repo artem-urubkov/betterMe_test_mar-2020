@@ -2,7 +2,7 @@ package com.auru.betterme.database
 
 import androidx.paging.DataSource
 import androidx.room.*
-import com.auru.betterme.database.domain.FavouriteMovieRow
+import com.auru.betterme.database.domain.FavouriteMovie
 
 /**
  * Database Access Object for the Movies database.
@@ -14,16 +14,16 @@ interface FavouriteMovieDao {
      * it back to UI via ViewModel.
      */
     @Query("SELECT * FROM favour_movies")
-    fun findAll(): DataSource.Factory<Int, FavouriteMovieRow>
+    fun findAll(): DataSource.Factory<Int, FavouriteMovie>
 
     @Query("UPDATE favour_movies SET id = (SELECT movies.id FROM movies WHERE movies.name = favour_movies.name ), overview = (SELECT movies.overview FROM movies WHERE movies.name = favour_movies.name ), posterPath = (SELECT movies.posterPath FROM movies WHERE movies.name = favour_movies.name ), releaseDate = (SELECT movies.releaseDate FROM movies WHERE movies.name = favour_movies.name ), timestamp = (SELECT movies.timestamp FROM movies WHERE movies.name = favour_movies.name ) WHERE EXISTS (SELECT * FROM movies WHERE movies.name = favour_movies.name)")
     fun updateFavouritesByFreshMovies()
 
     @Insert
-    fun insert(movie: FavouriteMovieRow)
+    fun insert(movie: FavouriteMovie)
 
     @Delete
-    fun delete(movie: FavouriteMovieRow)
+    fun delete(movie: FavouriteMovie)
 
     @Query("DELETE FROM favour_movies WHERE timestamp < :timestamp")
     fun deleteAllExpired(timestamp: Long)

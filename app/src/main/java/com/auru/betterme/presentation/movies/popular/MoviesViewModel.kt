@@ -7,7 +7,7 @@ import androidx.paging.toLiveData
 import com.auru.betterme.*
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.MovieDao
-import com.auru.betterme.database.domain.MovieRow
+import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.domain.MoviesMapperAndValidator
 import com.auru.betterme.presentation.movies.PagingConfig
 import info.movito.themoviedbapi.TmdbApi
@@ -51,7 +51,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
 
                 while (currentIndex < totalMoviesSize && currentIndex < MOVIES_NUMBER_LIMIT) {
                     val initialIndex = currentIndex
-                    val moviesToPersist = mutableListOf<MovieRow>()
+                    val moviesToPersist = mutableListOf<Movie>()
                     //processing by portions of about 1000 elements
                     do {
                         popularMovies = moviesFromBE.getPopularMovies(API_LANGUAGE, currentPage)
@@ -67,7 +67,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                                 continue
                             }
 
-                            val movie = MoviesMapperAndValidator.convertMovieDBToMovieRow(
+                            val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
                                 movieDb,
                                 currentIndex,
                                 currentSyncTimestamp
@@ -96,10 +96,10 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun addToFavourites(movie: MovieRow) {
+    fun addToFavourites(movie: Movie) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val favorMovie = MoviesMapperAndValidator.convertMovieRowToFavouriteMovieRow(movie)
+                val favorMovie = MoviesMapperAndValidator.convertMovieToFavouriteMovie(movie)
                 favorMovieDao.insert(favorMovie)
             } catch (e: Exception) {
                 //TODO post error

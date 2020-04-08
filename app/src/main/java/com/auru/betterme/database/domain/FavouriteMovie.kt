@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
  *
  */
 @Entity(tableName = "favour_movies")
-data class FavouriteMovieRow( //because data classes are incompatible with inheritance and lead to errors with Room if using workarounds (((
+data class FavouriteMovie( //because data classes are incompatible with inheritance and lead to errors with Room if using workarounds (((
     @PrimaryKey
     val id: Int,
     val name: String,
