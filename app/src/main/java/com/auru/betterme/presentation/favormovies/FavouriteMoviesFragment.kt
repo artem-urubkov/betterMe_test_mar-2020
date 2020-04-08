@@ -12,7 +12,7 @@ import com.auru.betterme.R
 import com.auru.betterme.database.FavouriteMovieRow
 import com.auru.betterme.database.MovieRowInterface
 import com.auru.betterme.presentation.base.MovieItemClickListener
-import com.auru.betterme.presentation.movies.MoviePagedListAdapter
+import com.auru.betterme.presentation.base.MoviePagedListAdapter
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
@@ -34,9 +34,10 @@ class FavouriteMoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = MoviePagedListAdapter<FavouriteMovieRow>(
-            movieItemClickListener
-        )
+        val adapter =
+            MoviePagedListAdapter<FavouriteMovieRow>(
+                movieItemClickListener
+            )
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
 

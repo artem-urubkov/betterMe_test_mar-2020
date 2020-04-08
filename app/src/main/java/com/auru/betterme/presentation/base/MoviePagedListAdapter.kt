@@ -1,12 +1,10 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.base
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.auru.betterme.database.MovieRowInterface
-import com.auru.betterme.presentation.base.MovieItemClickListener
-import com.auru.betterme.presentation.base.MovieViewHolder
 
 class MoviePagedListAdapter<T: MovieRowInterface>(private val movieItemClickListener: MovieItemClickListener?) :
     PagedListAdapter<T, MovieViewHolder>(object : DiffUtil.ItemCallback<T>() {
