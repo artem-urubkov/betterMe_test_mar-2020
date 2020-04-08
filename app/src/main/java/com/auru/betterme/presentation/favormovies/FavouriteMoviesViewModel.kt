@@ -2,16 +2,14 @@ package com.auru.betterme.presentation.favormovies
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.toLiveData
-import com.auru.betterme.*
+import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.FavouriteMovieRow
-import com.auru.betterme.database.MovieRow
-import com.auru.betterme.domain.MoviesMapperAndValidator
 import com.auru.betterme.presentation.base.PagingConfig
-import info.movito.themoviedbapi.TmdbApi
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
