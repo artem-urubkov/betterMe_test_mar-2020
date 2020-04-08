@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.auru.betterme.database.MovieRowInterface
-import com.auru.betterme.presentation.base.MovieItemClickListenerExt
-import com.auru.betterme.presentation.base.MovieViewHolderExt
+import com.auru.betterme.presentation.base.MovieItemClickListener
+import com.auru.betterme.presentation.base.MovieViewHolder
 
-class MoviePagedListAdapter<T: MovieRowInterface>(private val movieItemClickListener: MovieItemClickListenerExt?) :
-    PagedListAdapter<T, MovieViewHolderExt>(object : DiffUtil.ItemCallback<T>() {
+class MoviePagedListAdapter<T: MovieRowInterface>(private val movieItemClickListener: MovieItemClickListener?) :
+    PagedListAdapter<T, MovieViewHolder>(object : DiffUtil.ItemCallback<T>() {
         override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = oldItem.getShownName() == newItem.getShownName()
 
         @SuppressLint("DiffUtilEquals")
@@ -17,13 +17,13 @@ class MoviePagedListAdapter<T: MovieRowInterface>(private val movieItemClickList
 
     }){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolderExt =
-        MovieViewHolderExt(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder =
+        MovieViewHolder(
             parent,
             movieItemClickListener
         )
 
-    override fun onBindViewHolder(holder: MovieViewHolderExt, position: Int) {
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.bindTo(getItem(position))
     }
 

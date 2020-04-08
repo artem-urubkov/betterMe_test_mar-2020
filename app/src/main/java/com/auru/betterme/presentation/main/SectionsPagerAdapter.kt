@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.auru.betterme.R
 import com.auru.betterme.presentation.favormovies.FavouriteMoviesFragment
-import com.auru.betterme.presentation.movies.PopularItemsFragment
+import com.auru.betterme.presentation.movies.PopularMoviesFragment
 
 private val TAB_TITLES = arrayOf(
         R.string.tab_text_films,
@@ -22,9 +22,9 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
 
     override fun getItem(position: Int): Fragment =
         when(position){
-            0 -> PopularItemsFragment.newInstance()
+            0 -> PopularMoviesFragment.newInstance()
             1-> FavouriteMoviesFragment.newInstance()
-            else -> PopularItemsFragment.newInstance()
+            else -> PopularMoviesFragment.newInstance()
         }
 
     override fun getPageTitle(position: Int): CharSequence? {
