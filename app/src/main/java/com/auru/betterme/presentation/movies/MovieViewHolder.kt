@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.Movie
-import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.database.domain.MovieInterface
 import com.bumptech.glide.Glide
 
 
@@ -50,13 +50,13 @@ open class MovieViewHolder(
     private val removeFromFavourites = itemView.findViewById<TextView>(R.id.remove_from_favourites)
     private val share = itemView.findViewById<TextView>(R.id.share)
 
-    var movie: MovieRowInterface? = null
+    var movie: MovieInterface? = null
 
     /**
      * Items might be null if they are not paged in yet. PagedListAdapter will re-bind the
      * ViewHolder when Item is loaded.
      */
-    fun bindTo(movie: MovieRowInterface?) {
+    fun bindTo(movie: MovieInterface?) {
         this.movie = movie
         movie?.let {
             addToFavourites.setOnClickListener(this)

@@ -10,6 +10,7 @@
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_inet_unavailable">Please turn on internet</string>
 
+    <string name="retry">Retry</string>
     <string name="close">Close</string>
     <string name="empty_list">Oops... The list is empty</string>
 

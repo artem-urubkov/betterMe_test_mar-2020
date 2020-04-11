@@ -15,19 +15,17 @@ class MoviesMapperAndValidator {
                 m.name,
                 m.overview,
                 m.posterPath,
-                m.releaseDate,
-                m.timestamp
+                m.releaseDate
             )
 
-        fun convertMovieDBToMovie(m: MovieDb, id: Int, timeStamp: Long) =
+        fun convertMovieDBToMovie(m: MovieDb, id: Int) =
             Movie(
                 id,
                 m.id,
                 getName(m),
                 m.overview,
                 API_IMAGE_URL + m.posterPath,
-                m.releaseDate,
-                timeStamp
+                m.releaseDate
             )
 
         private fun getName(m: MovieDb) =

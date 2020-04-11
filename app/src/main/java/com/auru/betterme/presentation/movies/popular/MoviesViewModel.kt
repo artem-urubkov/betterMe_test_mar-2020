@@ -31,6 +31,8 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
     lateinit var movieDao: MovieDao
     @Inject
     lateinit var favorMovieDao: FavouriteMovieDao
+//    @Inject
+//    lateinit var tmdbApi: TmdbApi
 
     init {
         (application as AndroidApp).component.inject(this)
@@ -47,13 +49,12 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                 //TODO process exceptions
 
                 val currentSyncTimestamp = System.currentTimeMillis()
-                val moviesApi = TmdbApi(API_KEY).movies
                 var currentIndex = 0
-                var currentPage = API_START_POSITION
+                var currentPage = BE_API_START_POSITION
 
                 movieDao.deleteAll()
 
-                var popularMovies = moviesApi.getPopularMovies(API_LANGUAGE, currentPage)
+                var popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, currentPage)
                 var totalMoviesSize = popularMovies.totalResults
 
                 while (currentIndex < totalMoviesSize && currentIndex < MOVIES_NUMBER_LIMIT) {
@@ -61,7 +62,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                     val moviesToPersist = mutableListOf<Movie>()
                     //processing by portions of about 1000 elements
                     do {
-                        popularMovies = moviesApi.getPopularMovies(API_LANGUAGE, currentPage)
+                        popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, currentPage)
                         currentPage += 1
                         totalMoviesSize = popularMovies.totalResults
 
@@ -77,8 +78,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
                             Log.d(LOG_TAG, "currIndex = $currentIndex")
                             val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
                                 movieDb,
-                                currentIndex,
-                                currentSyncTimestamp
+                                currentIndex
                             )
 
                             //collecting movies to persist
@@ -94,12 +94,11 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
 
                 }
 
-                //TODO account for case when title/originalTitle have been changed on BE side
                 //refresh favourites indexes+info by movie names
                 favorMovieDao.updateFavouritesByFreshMovies()
 
                 //deleting outdated favourites -> apply another strategy when have instructions
-                favorMovieDao.deleteAllExpired(currentSyncTimestamp)
+//                favorMovieDao.deleteAllExpired(currentSyncTimestamp)
             }
 
         }

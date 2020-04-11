@@ -22,8 +22,7 @@ data class FavouriteMovie( //because data classes are incompatible with inherita
     val name: String,
     val overview: String?,
     val posterPath: String?,
-    val releaseDate: String?,
-    val timestamp: Long
-) : MovieRowInterface {
+    val releaseDate: String?
+) : MovieInterface {
     override fun getBEndId(): Int = backEndId
 }

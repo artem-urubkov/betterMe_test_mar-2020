@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.database.domain.MovieInterface
 
-class MoviePagedListAdapter<T: MovieRowInterface>(private val movieItemClickListener: MovieItemClickListener?, private val fragment: Fragment) :
+class MoviePagedListAdapter<T: MovieInterface>(private val movieItemClickListener: MovieItemClickListener?, private val fragment: Fragment) :
     PagedListAdapter<T, MovieViewHolder>(object : DiffUtil.ItemCallback<T>() {
         override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = oldItem.getBEndId() == newItem.getBEndId()
 

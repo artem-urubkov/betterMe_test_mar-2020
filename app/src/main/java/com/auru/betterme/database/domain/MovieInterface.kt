@@ -1,5 +1,5 @@
 package com.auru.betterme.database.domain
 
-interface MovieRowInterface {
+interface MovieInterface {
     fun getBEndId(): Int
 }

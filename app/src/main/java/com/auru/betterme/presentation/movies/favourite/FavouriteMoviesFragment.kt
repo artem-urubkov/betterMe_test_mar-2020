@@ -10,7 +10,7 @@ import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
-import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.presentation.movies.MovieItemClickListener
 import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import kotlinx.android.synthetic.main.fragment_movies.*
@@ -51,7 +51,7 @@ class FavouriteMoviesFragment : Fragment() {
 
     private val movieItemClickListener = object :
         MovieItemClickListener {
-        override fun onClick(view: View?, movie: MovieRowInterface?) {
+        override fun onClick(view: View?, movie: MovieInterface?) {
             if (view != null && movie != null) {
                 when (view.id) {
                     R.id.remove_from_favourites -> {

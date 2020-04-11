@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.Movie
-import com.auru.betterme.database.domain.MovieRowInterface
+import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.presentation.movies.MovieItemClickListener
 import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +24,24 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 class PopularMoviesFragment : Fragment() {
 
     private val viewModel by viewModels<MoviesViewModel>()
+//    private val viewModel by viewModels<MovieViewModel>()
+
+//    private val model: MovieViewModel by viewModels {
+//        object : AbstractSavedStateViewModelFactory(this, null) {
+//            override fun <T : ViewModel?> create(
+//                key: String,
+//                modelClass: Class<T>,
+//                handle: SavedStateHandle
+//            ): T {
+//                val repoTypeParam = intent.getIntExtra(KEY_REPOSITORY_TYPE, 0)
+//                val repoType = RedditPostRepository.Type.values()[repoTypeParam]
+//                val repo = ServiceLocator.instance(this@RedditActivity)
+//                    .getRepository(repoType)
+//                @Suppress("UNCHECKED_CAST")
+//                return MovieViewModel(repo, handle) as T
+//            }
+//        }
+//    }
 
     //added recView
     //added paging library
@@ -62,7 +83,7 @@ class PopularMoviesFragment : Fragment() {
 
     private val movieItemClickListener = object :
         MovieItemClickListener {
-        override fun onClick(view: View?, movie: MovieRowInterface?) {
+        override fun onClick(view: View?, movie: MovieInterface?) {
             if (view != null && movie != null) {
                 when (view.id) {
                     R.id.add_to_favourites -> {

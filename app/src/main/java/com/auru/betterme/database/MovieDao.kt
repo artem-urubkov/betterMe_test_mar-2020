@@ -23,4 +23,7 @@ interface MovieDao {
     @Query("DELETE FROM movies")
     fun deleteAll()
 
+    @Query("SELECT backEndId FROM movies ORDER BY backEndId DESC LIMIT 1")
+    fun getLastBackendId(): Int
+
 }
