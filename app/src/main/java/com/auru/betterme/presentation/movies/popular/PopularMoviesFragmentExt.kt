@@ -20,7 +20,6 @@ import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.mvvm.NetworkState
 import com.auru.betterme.presentation.movies.MovieItemClickListener
-import com.auru.betterme.presentation.movies.MoviePagedListAdapter2
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
@@ -115,9 +114,13 @@ class PopularMoviesFragmentExt : Fragment() {
     }
 
     private fun initAdapter() {
-        val adapter = MoviePagedListAdapter2<Movie>(movieItemClickListener, this) {
-            viewModel.retry()
-        }
+        val adapter =
+            MoviePagedListAdapter2<Movie>(
+                movieItemClickListener,
+                this
+            ) {
+                viewModel.retry()
+            }
         recyclerView.adapter = adapter
         viewModel.posts.observe(viewLifecycleOwner, Observer<PagedList<Movie>> {
             adapter.submitList(it) {

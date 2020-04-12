@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.movies.popular
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -11,6 +11,8 @@ import com.auru.betterme.R
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.mvvm.NetworkState
 import com.auru.betterme.presentation.base.NetworkStateItemViewHolder
+import com.auru.betterme.presentation.movies.MovieItemClickListener
+import com.auru.betterme.presentation.movies.MovieViewHolder
 
 class MoviePagedListAdapter2<T : MovieInterface>(
     private val movieItemClickListener: MovieItemClickListener?,

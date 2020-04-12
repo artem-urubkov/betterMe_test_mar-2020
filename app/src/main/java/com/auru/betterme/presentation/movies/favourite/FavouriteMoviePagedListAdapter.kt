@@ -1,4 +1,4 @@
-package com.auru.betterme.presentation.movies
+package com.auru.betterme.presentation.movies.favourite
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.auru.betterme.database.domain.MovieInterface
+import com.auru.betterme.presentation.movies.MovieItemClickListener
+import com.auru.betterme.presentation.movies.MovieViewHolder
 
-class MoviePagedListAdapter<T: MovieInterface>(private val movieItemClickListener: MovieItemClickListener?, private val fragment: Fragment) :
+class FavouriteMoviePagedListAdapter<T: MovieInterface>(private val movieItemClickListener: MovieItemClickListener?, private val fragment: Fragment) :
     PagedListAdapter<T, MovieViewHolder>(object : DiffUtil.ItemCallback<T>() {
         override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = oldItem.getBEndId() == newItem.getBEndId()
 

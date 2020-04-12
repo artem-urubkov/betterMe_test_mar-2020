@@ -12,7 +12,6 @@ import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.presentation.movies.MovieItemClickListener
-import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
@@ -35,7 +34,7 @@ class FavouriteMoviesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter =
-            MoviePagedListAdapter<FavouriteMovie>(
+            FavouriteMoviePagedListAdapter<FavouriteMovie>(
                 movieItemClickListener,
                 this
             )
