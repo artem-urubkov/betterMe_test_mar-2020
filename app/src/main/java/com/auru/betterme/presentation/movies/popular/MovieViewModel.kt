@@ -17,6 +17,7 @@ package com.auru.betterme.presentation.movies.popular
  */
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.FavouriteMovieDao
@@ -35,6 +36,7 @@ class MovieViewModel(
     companion object {
         const val KEY_MOVIE = "movie"
         val DEFAULT_MOVIE_DB_ID = 0
+        val LOG_TAG = MovieViewModel::class.java.simpleName
     }
 
     @Inject
@@ -73,7 +75,8 @@ class MovieViewModel(
                 val favorMovie = MoviesMapperAndValidator.convertMovieToFavouriteMovie(movie)
                 favorMovieDao.insert(favorMovie)
             } catch (e: Exception) {
-                //TODO post error
+                //it's unusual and seldom error - so, just log it -> it must be processed through log_reports
+                Log.e(LOG_TAG, "can't insert to favourite_movies table")
             }
         }
     }

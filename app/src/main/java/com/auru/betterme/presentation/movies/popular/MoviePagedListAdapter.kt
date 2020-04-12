@@ -58,19 +58,19 @@ class MoviePagedListAdapter<T : MovieInterface>(
         }
     }
 
-    override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        if (payloads.isNotEmpty()) {
-            val item = getItem(position)
-            Log.e(LOG_TAG, "onBindViewHolder(), payloads.isNotEmpty()")
-//            (holder as MovieViewHolder).updateScore(item)
-        } else {
-            onBindViewHolder(holder, position)
-        }
-    }
+//    override fun onBindViewHolder(
+//        holder: RecyclerView.ViewHolder,
+//        position: Int,
+//        payloads: MutableList<Any>
+//    ) {
+//        if (payloads.isNotEmpty()) {
+//            val item = getItem(position)
+//            Log.e(LOG_TAG, "onBindViewHolder(), payloads.isNotEmpty()")
+////            (holder as MovieViewHolder).updateScore(item)
+//        } else {
+//            onBindViewHolder(holder, position)
+//        }
+//    }
 
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
@@ -88,6 +88,10 @@ class MoviePagedListAdapter<T : MovieInterface>(
     }
 
     fun setNetworkState(newNetworkState: NetworkState?) {
+        if(this.networkState == NetworkState.LOADED && newNetworkState == NetworkState.LOADING && itemCount == 0){
+            //i.e. in case of "refresh from scratch after some data was previously shown" we skip the event and let the swipeToRefresh only to show the progress
+            return
+        }
         val previousState = this.networkState
         val hadExtraRow = hasExtraRow()
         this.networkState = newNetworkState
