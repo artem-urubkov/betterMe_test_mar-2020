@@ -22,15 +22,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.auru.betterme.API_KEY
 import com.auru.betterme.API_LANGUAGE
-import com.auru.betterme.BE_API_ITEMS_ON_PAGE
 import com.auru.betterme.BE_API_START_POSITION
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.NetworkState
 import info.movito.themoviedbapi.TmdbApi
-import info.movito.themoviedbapi.TmdbMovies
 import info.movito.themoviedbapi.model.core.MovieResultsPage
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * This boundary callback gets notified when user reaches to the edges of the list such that the
@@ -40,15 +39,9 @@ import kotlinx.coroutines.sync.Mutex
  * rate limiting using the PagingRequestHelper class.
  */
 class MoviesBoundaryCallback(
-//    private val tmdbApi: TmdbApi,
     private val coroutineScope: CoroutineScope,
-//    private val subredditName: String,
-//    private val movieDao: MovieDao,
-//    private val favorMovieDao: FavouriteMovieDao,
 //    private val handleResponse: (String, RedditApi.ListingResponse?) -> Unit,
     private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit
-//    private val ioExecutor: Executor,
-//    private val networkPageSize: Int
 ) : PagedList.BoundaryCallback<Movie>() {
 
     companion object {
@@ -56,21 +49,6 @@ class MoviesBoundaryCallback(
     }
 
     val networkState = MutableLiveData<NetworkState>()
-
-    //    val job = SupervisorJob()
-//    val coroutineScope = CoroutineScope(Dispatchers.Default + job)
-//    fun getFreshScope(): CoroutineScope {
-//        coroutineScope.coroutineContext.cancelChildren()
-//        return coroutineScope
-//    }
-    val movieDaoMutex = Mutex()
-
-//    @Inject
-//    lateinit var movieDao: MovieDao
-//    @Inject
-//    lateinit var favorMovieDao: FavouriteMovieDao
-//    @Inject
-//    lateinit var moviesApi: TmdbMovies
 
 
 //    report.hasRunning() -> liveData.postValue(NetworkState.LOADING)
@@ -83,26 +61,9 @@ class MoviesBoundaryCallback(
     override fun onZeroItemsLoaded() {
         Log.d(LOG_TAG, "onZeroItemsLoaded()")
 
-        coroutineScope.launch {
-            try {
-                networkState.postValue(NetworkState.LOADING)
-                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_POSITION)
-                DbRedditPostRepository.DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
-                handleResponse(0, popularMovies)
-                networkState.postValue(NetworkState.LOADED)
-                //TODO need to remember total movies number?
-            } catch (e: Exception) {
-                if (isActive) { //we should not to process JobCancellationException
-                    networkState.postValue(NetworkState.error(e, null))
-                }
-            }
-        }
-//        helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
-//            webservice.getTop(
-//                    subreddit = subredditName,
-//                    limit = networkPageSize)
-//                    .enqueue(createWebserviceCallback(it))
-//        }
+        loadMovies(0)
+
+        //TODO need to remember total movies number?
     }
 
     /**
@@ -111,14 +72,20 @@ class MoviesBoundaryCallback(
     @MainThread
     override fun onItemAtEndLoaded(itemAtEnd: Movie) {
         Log.d(LOG_TAG, "onItemAtEndLoaded(), itemId=${itemAtEnd.id}, name=${itemAtEnd.name}")
+        loadMovies(itemAtEnd.id)
+    }
+
+    private fun loadMovies(lastDbMovieId: Int) {
         coroutineScope.launch {
             try {
                 networkState.postValue(NetworkState.LOADING)
+                val pageNumberToLoad = if (lastDbMovieId == 0) BE_API_START_POSITION else lastDbMovieId / DbRedditPostRepository.DEFAULT_NETWORK_PAGE_SIZE + 1
+                Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
                 val popularMovies =  TmdbApi(API_KEY).movies.getPopularMovies(
                     API_LANGUAGE,
-                    if (itemAtEnd.id == 0) BE_API_START_POSITION else itemAtEnd.id / DbRedditPostRepository.DEFAULT_NETWORK_PAGE_SIZE + 2
+                    pageNumberToLoad
                 )
-                handleResponse(itemAtEnd.id, popularMovies)
+                handleResponse(lastDbMovieId, popularMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 if (isActive) { //we should not to process JobCancellationException
@@ -127,65 +94,6 @@ class MoviesBoundaryCallback(
             }
         }
     }
-
-    private fun loadMovies(lastDbMovieId: Int) {
-
-    }
-
-//    /**
-//     * every time it gets new items, boundary callback simply inserts them into the database and
-//     * paging library takes care of refreshing the list if necessary.
-//     */
-//    private suspend fun insertItemsIntoDb(
-//        lastMovieDbId: Int,
-//        moviesResultsPage: MovieResultsPage
-//    ) {
-//        val moviesToPersist = mutableListOf<Movie>()
-//        val moviesDb = moviesResultsPage.results.asSequence().filterNotNull().filter{item -> MoviesMapperAndValidator.isValid(item)}
-//
-//       moviesDb.mapIndexed{ index, item ->
-//            val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
-//                item,
-//                lastMovieDbId + index + 1
-//            )
-//            moviesToPersist.add(movie)
-//        }
-//
-////        for (index in moviesDb.indices) {
-////            val movieDb = moviesDb[index]
-////
-////            if (!MoviesMapperAndValidator.isValid(movieDb)) {
-////                continue
-////            }
-////
-//////            Log.d(LOG_TAG, "currIndex = $currentIndex")
-////            val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
-////                movieDb,
-////                currentIndex
-////            )
-////
-////            //collecting movies to persist
-////            moviesToPersist.add(movie)
-////            currentIndex++
-////            //FIXME resolve error with non-unique currentIndex-"id" - ah, just cancel the previous coroutine-Job
-////        }
-//
-//        try {
-//            movieDaoMutex.lock()
-//            //persist movies: insert to  movies table
-//            movieDao.insert(moviesToPersist)
-//
-////        response: Response<RedditApi.ListingResponse>,
-////        it: PagingRequestHelper.Request.Callback
-////    ) {
-////        ioExecutor.execute {
-////            handleResponse(subredditName, response.body())
-////            it.recordSuccess()
-////        }
-//        } finally {
-//            movieDaoMutex.unlock()
-//        }
-//    }
 
 
     override fun onItemAtFrontLoaded(itemAtFront: Movie) {

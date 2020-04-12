@@ -24,7 +24,6 @@ import com.auru.betterme.database.MovieDao
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.Listing
 import com.auru.betterme.mvvm.NetworkState
-import java.util.concurrent.Executor
 import androidx.paging.toLiveData
 import com.auru.betterme.API_KEY
 import com.auru.betterme.API_LANGUAGE
@@ -32,7 +31,6 @@ import com.auru.betterme.BE_API_START_POSITION
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.domain.MoviesMapperAndValidator
 import info.movito.themoviedbapi.TmdbApi
-import info.movito.themoviedbapi.TmdbMovies
 import info.movito.themoviedbapi.model.core.MovieResultsPage
 import kotlinx.coroutines.*
 import java.lang.Exception
@@ -42,12 +40,9 @@ import java.lang.Exception
  * listing that loads in pages.
  */
 class DbRedditPostRepository(
+    //TODO dagger
     val db: MoviesDatabase,
-    val movieDao: MovieDao//,
-//    private val redditApi: RedditApi,
-//    private val tmdbApi: TmdbApi//,
-//    private val ioExecutor: Executor,
-//    private val networkPageSize: Int = DEFAULT_NETWORK_PAGE_SIZE
+    val movieDao: MovieDao
 ) : RedditPostRepository {
 
     companion object {
@@ -55,35 +50,19 @@ class DbRedditPostRepository(
         var DEFAULT_NETWORK_PAGE_SIZE = 20
     }
 
-    val job = SupervisorJob()
-    val coroutineScope = CoroutineScope(Dispatchers.Default + job)
+    private val job = SupervisorJob()
+    private val coroutineScope = CoroutineScope(Dispatchers.Default + job)
 
-    fun getFreshScope(): CoroutineScope {
+    private fun getFreshScope(): CoroutineScope {
         coroutineScope.coroutineContext.cancelChildren()
         return coroutineScope
     }
-
-//    /**
-//     * Inserts the response into the database while also assigning position indices to items.
-//     */
-//    private fun insertResultIntoDb(subredditName: String, body: RedditApi.ListingResponse?) {
-//        body!!.data.children.let { posts ->
-//            db.runInTransaction {
-//                val start = db.posts().getNextIndexInSubreddit(subredditName)
-//                val items = posts.mapIndexed { index, child ->
-//                    child.data.indexInResponse = start + index
-//                    child.data
-//                }
-//                db.posts().insert(items)
-//            }
-//        }
-//    }
 
     /**
      * every time it gets new items, boundary callback simply inserts them into the database and
      * paging library takes care of refreshing the list if necessary.
      */
-    private suspend fun insertItemsIntoDb(
+    private suspend fun insertMoviesIntoDb(
         lastMovieDbId: Int,
         moviesResultsPage: MovieResultsPage
     ) {
@@ -92,13 +71,14 @@ class DbRedditPostRepository(
             val moviesDb = moviesResultsPage.results.asSequence().filterNotNull()
                 .filter { item -> MoviesMapperAndValidator.isValid(item) }
 
-            moviesDb.mapIndexed { index, item ->
-                val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
+           val movies/*: List<Movie> */= moviesDb.mapIndexed { index, item ->
+                /*val movie = */MoviesMapperAndValidator.convertMovieDBToMovie(
                     item,
                     lastMovieDbId + index + 1
                 )
-                moviesToPersist.add(movie)
-            }
+//                moviesToPersist.add(movie)
+            }.toList()
+            moviesToPersist.addAll(movies)
 
 //        for (index in moviesDb.indices) {
 //            val movieDb = moviesDb[index]
@@ -146,36 +126,13 @@ class DbRedditPostRepository(
                         movieDao.deleteAll()
                     }
                 }
-                insertItemsIntoDb(0, popularMovies)
+                insertMoviesIntoDb(0, popularMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.error(e, null))
             }
 
         }
-
-//        redditApi.getTop(subredditName, networkPageSize).enqueue(
-//            object : Callback<RedditApi.ListingResponse> {
-//                override fun onFailure(call: Call<RedditApi.ListingResponse>, t: Throwable) {
-//                    // retrofit calls this on main thread so safe to call set value
-//                    networkState.value = NetworkState.error(t.message)
-//                }
-//
-//                override fun onResponse(
-//                    call: Call<RedditApi.ListingResponse>,
-//                    response: Response<RedditApi.ListingResponse>
-//                ) {
-//                    ioExecutor.execute {
-//                        db.runInTransaction {
-//                            db.posts().deleteBySubreddit(subredditName)
-//                            insertResultIntoDb(subredditName, response.body())
-//                        }
-//                        // since we are in bg thread now, post the result.
-//                        networkState.postValue(NetworkState.LOADED)
-//                    }
-//                }
-//            }
-//        )
         return networkState
     }
 
@@ -188,7 +145,7 @@ class DbRedditPostRepository(
         // the list and update the database with extra data.
         val boundaryCallback = MoviesBoundaryCallback(
             coroutineScope = coroutineScope,
-            handleResponse = this::insertItemsIntoDb
+            handleResponse = this::insertMoviesIntoDb
         )
         // we are using a mutable live data to trigger refresh requests which eventually calls
         // refresh method and gets a new live data. Each refresh request by the user becomes a newly

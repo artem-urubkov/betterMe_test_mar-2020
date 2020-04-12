@@ -30,10 +30,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MovieViewModel(
-//    private val repository: RedditPostRepository,
     private val savedStateHandle: SavedStateHandle,
     private val application: Application
-//) : AndroidViewModel(application) {
 ) : ViewModel() {
     companion object {
         const val KEY_MOVIE = "movie"
@@ -44,8 +42,6 @@ class MovieViewModel(
     lateinit var favorMovieDao: FavouriteMovieDao
     @Inject
     lateinit var repository: RedditPostRepository
-//    @Inject
-//    lateinit var savedStateHandle: SavedStateHandle
 
     //TODO deleting outdated favourites -> apply another strategy when have instructions
 
@@ -53,7 +49,6 @@ class MovieViewModel(
         (application as AndroidApp).component.inject(this)
         if (!savedStateHandle.contains(KEY_MOVIE)) {
             savedStateHandle.set(KEY_MOVIE, DEFAULT_MOVIE_NUMBER)
-//            savedStateHandle.set(KEY_MOVIE, null)
         }
     }
 

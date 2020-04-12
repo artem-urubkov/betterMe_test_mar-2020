@@ -1,11 +1,9 @@
 package com.auru.betterme.presentation.movies.popular
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,18 +11,15 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.observe
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.mvvm.NetworkState
 import com.auru.betterme.presentation.movies.MovieItemClickListener
-import com.auru.betterme.presentation.movies.MoviePagedListAdapter
 import com.auru.betterme.presentation.movies.MoviePagedListAdapter2
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_movies.*
@@ -33,7 +28,6 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 class PopularMoviesFragmentExt : Fragment() {
 
     private val viewModel: MovieViewModel by viewModels {
-//        ошибка похоже где-то здесь
         object : AbstractSavedStateViewModelFactory(this, null) {
             override fun <T : ViewModel?> create(
                 key: String,
@@ -84,9 +78,7 @@ class PopularMoviesFragmentExt : Fragment() {
 //        })
 
         initAdapter()
-//        initSwipeToRefresh()
-
-//        initSearch()
+        initSwipeToRefresh()
     }
 
     private val movieItemClickListener = object :
@@ -102,17 +94,25 @@ class PopularMoviesFragmentExt : Fragment() {
             }
         }
     }
-//
-//    private fun showErrorSnackBar(message: String) {
-//        errorSnackbar =
-//            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
-//
-//        errorSnackbar?.apply {
-//            setAction(R.string.close) {}
-//            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
-//                .show()
-//        }
-//    }
+
+    private fun showErrorSnackBar(message: String) {
+        errorSnackbar =
+            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
+
+        errorSnackbar?.apply {
+            setAction(R.string.close) {}
+            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
+                .show()
+        }
+    }
+
+    private fun hideErrorSnackBar() {
+        errorSnackbar?.let {
+            if (it.isShown) {
+                it.dismiss()
+            }
+        }
+    }
 
     private fun initAdapter() {
         val adapter = MoviePagedListAdapter2<Movie>(movieItemClickListener, this) {
@@ -123,56 +123,32 @@ class PopularMoviesFragmentExt : Fragment() {
             adapter.submitList(it) {
                 // Workaround for an issue where RecyclerView incorrectly uses the loading / spinner
                 // item added to the end of the list as an anchor during initial load.
-//                val layoutManager = (recyclerView.layoutManager as LinearLayoutManager)
-//                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-//                if (position != RecyclerView.NO_POSITION) {
-//                    recyclerView.scrollToPosition(position)
-//                }
+                val layoutManager = (recyclerView.layoutManager as LinearLayoutManager)
+                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+                if (position != RecyclerView.NO_POSITION) {
+                    recyclerView.scrollToPosition(position)
+                }
             }
         })
-//        viewModel.networkState.observe(viewLifecycleOwner, Observer {
-//            adapter.setNetworkState(it)
-//        })
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+            //TODO use also errorSnackbar
+            adapter.setNetworkState(it)
+        })
     }
 
     private fun initSwipeToRefresh() {
-//        viewModel.refreshState.observe(viewLifecycleOwner, Observer {
-//            swipe_refresh.isRefreshing = it == NetworkState.LOADING
-//        })
-//        swipe_refresh.setOnRefreshListener {
-//            viewModel.refresh()
-//        }
+        viewModel.refreshState.observe(viewLifecycleOwner, Observer {
+            val isLoading = it == NetworkState.LOADING
+            if(isLoading) {
+                hideErrorSnackBar()
+            }
+            swipe_refresh.isRefreshing = isLoading
+        })
+        swipe_refresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
     }
 
-//    private fun initSearch() {
-//        input.setOnEditorActionListener { _, actionId, _ ->
-//            if (actionId == EditorInfo.IME_ACTION_GO) {
-//                updatedSubredditFromInput()
-//                true
-//            } else {
-//                false
-//            }
-//        }
-//        input.setOnKeyListener { _, keyCode, event ->
-//            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-//                updatedSubredditFromInput()
-//                true
-//            } else {
-//                false
-//            }
-//        }
-//    }
-
-    private fun updatedSubredditFromInput() {
-//        input.text.trim().toString().let {
-//            if (it.isNotEmpty()) {
-//                if (model.showSubreddit(it)) {
-//                    list.scrollToPosition(0)
-//                    (list.adapter as? PostsAdapter)?.submitList(null)
-//                }
-//            }
-//        }
-    }
 
     companion object {
         @JvmStatic
