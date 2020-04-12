@@ -39,14 +39,13 @@ import java.lang.Exception
  * Repository implementation that uses a database PagedList + a boundary callback to return a
  * listing that loads in pages.
  */
-class DbRedditPostRepository(
-    //TODO dagger
-    val db: MoviesDatabase,
-    val movieDao: MovieDao
-) : RedditPostRepository {
+class MoviesRepositoryImpl(
+    private val db: MoviesDatabase,
+    private val movieDao: MovieDao
+) : MoviesRepository {
 
     companion object {
-        val LOG_TAG = DbRedditPostRepository::class.java.simpleName
+        val LOG_TAG = MoviesRepositoryImpl::class.java.simpleName
         var DEFAULT_NETWORK_PAGE_SIZE = 20
     }
 
@@ -71,33 +70,13 @@ class DbRedditPostRepository(
             val moviesDb = moviesResultsPage.results.asSequence().filterNotNull()
                 .filter { item -> MoviesMapperAndValidator.isValid(item) }
 
-           val movies/*: List<Movie> */= moviesDb.mapIndexed { index, item ->
-                /*val movie = */MoviesMapperAndValidator.convertMovieDBToMovie(
+           val movies= moviesDb.mapIndexed { index, item ->
+                MoviesMapperAndValidator.convertMovieDBToMovie(
                     item,
                     lastMovieDbId + index + 1
                 )
-//                moviesToPersist.add(movie)
             }.toList()
             moviesToPersist.addAll(movies)
-
-//        for (index in moviesDb.indices) {
-//            val movieDb = moviesDb[index]
-//
-//            if (!MoviesMapperAndValidator.isValid(movieDb)) {
-//                continue
-//            }
-//
-////            Log.d(LOG_TAG, "currIndex = $currentIndex")
-//            val movie = MoviesMapperAndValidator.convertMovieDBToMovie(
-//                movieDb,
-//                currentIndex
-//            )
-//
-//            //collecting movies to persist
-//            moviesToPersist.add(movie)
-//            currentIndex++
-//            //FIXME resolve error with non-unique currentIndex-"id" - ah, just cancel the previous coroutine-Job
-//        }
 
             db.runInTransaction {
                 //persist movies: insert to  movies table
@@ -140,7 +119,7 @@ class DbRedditPostRepository(
      * Returns a Listing for the given subreddit.
      */
     @MainThread
-    override fun postsOfSubreddit(movieDbId: Int, pageSize: Int): Listing<Movie> {
+    override fun getMovies(movieDbId: Int, pageSize: Int): Listing<Movie> {
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
         val boundaryCallback = MoviesBoundaryCallback(

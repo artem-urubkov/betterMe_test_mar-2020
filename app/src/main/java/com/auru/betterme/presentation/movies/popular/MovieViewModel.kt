@@ -21,39 +21,37 @@ import androidx.lifecycle.*
 import com.auru.betterme.AndroidApp
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.domain.Movie
-import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.domain.MoviesMapperAndValidator
-import com.auru.betterme.mvvm.movies.RedditPostRepository
+import com.auru.betterme.mvvm.movies.MoviesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MovieViewModel(
-    private val savedStateHandle: SavedStateHandle,
-    private val application: Application
+    savedStateHandle: SavedStateHandle,
+    application: Application
 ) : ViewModel() {
     companion object {
         const val KEY_MOVIE = "movie"
-        val DEFAULT_MOVIE_NUMBER = 0
+        val DEFAULT_MOVIE_DB_ID = 0
     }
 
     @Inject
     lateinit var favorMovieDao: FavouriteMovieDao
     @Inject
-    lateinit var repository: RedditPostRepository
-
-    //TODO deleting outdated favourites -> apply another strategy when have instructions
+    lateinit var repository: MoviesRepository
 
     init {
         (application as AndroidApp).component.inject(this)
+
         if (!savedStateHandle.contains(KEY_MOVIE)) {
-            savedStateHandle.set(KEY_MOVIE, DEFAULT_MOVIE_NUMBER)
+            savedStateHandle.set(KEY_MOVIE, DEFAULT_MOVIE_DB_ID)
         }
     }
 
     private val repoResult = savedStateHandle.getLiveData<Int>(KEY_MOVIE).map {
-        repository.postsOfSubreddit(it, 20)
+        repository.getMovies(it, 20)
     }
     val posts = repoResult.switchMap { it.pagedList }
     val networkState = repoResult.switchMap { it.networkState }
@@ -63,13 +61,6 @@ class MovieViewModel(
         repoResult.value?.refresh?.invoke()
     }
 
-    fun showSubreddit(movie: MovieInterface): Boolean {
-        if (savedStateHandle.get<MovieInterface>(KEY_MOVIE) == movie) {
-            return false
-        }
-        savedStateHandle.set(KEY_MOVIE, movie)
-        return true
-    }
 
     fun retry() {
         val listing = repoResult.value

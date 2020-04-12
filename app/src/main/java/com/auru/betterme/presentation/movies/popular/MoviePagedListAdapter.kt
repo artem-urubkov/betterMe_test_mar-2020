@@ -14,7 +14,7 @@ import com.auru.betterme.presentation.base.NetworkStateItemViewHolder
 import com.auru.betterme.presentation.movies.MovieItemClickListener
 import com.auru.betterme.presentation.movies.MovieViewHolder
 
-class MoviePagedListAdapter2<T : MovieInterface>(
+class MoviePagedListAdapter<T : MovieInterface>(
     private val movieItemClickListener: MovieItemClickListener?,
     private val fragment: Fragment,
     private val retryCallback: () -> Unit
@@ -30,21 +30,24 @@ class MoviePagedListAdapter2<T : MovieInterface>(
     }) {
 
     companion object {
-        val LOG_TAG = MoviePagedListAdapter2::class.java.simpleName
+        val LOG_TAG = MoviePagedListAdapter::class.java.simpleName
     }
 
     private var networkState: NetworkState? = null
 
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder =
-//        MovieViewHolder(
-//            parent,
-//            movieItemClickListener,
-//            fragment
-//        )
-//
-//    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-//        holder.bindTo(getItem(position))
-//    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.list_row -> MovieViewHolder(
+                parent,
+                movieItemClickListener,
+                fragment
+            )
+            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
+            else -> throw IllegalArgumentException("unknown view type $viewType")
+        }
+    }
+
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
@@ -69,17 +72,6 @@ class MoviePagedListAdapter2<T : MovieInterface>(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            R.layout.list_row -> MovieViewHolder(
-                parent,
-                movieItemClickListener,
-                fragment
-            )
-            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
-            else -> throw IllegalArgumentException("unknown view type $viewType")
-        }
-    }
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 
@@ -110,38 +102,5 @@ class MoviePagedListAdapter2<T : MovieInterface>(
             notifyItemChanged(itemCount - 1)
         }
     }
-
-//    companion object {
-//        //        private val PAYLOAD_SCORE = Any()
-//        val POST_COMPARATOR = object : DiffUtil.ItemCallback<MovieRowInterface>() {
-//            @SuppressLint("DiffUtilEquals")
-//            override fun areContentsTheSame(
-//                oldItem: MovieRowInterface,
-//                newItem: MovieRowInterface
-//            ): Boolean =
-//                oldItem == newItem
-//
-//            override fun areItemsTheSame(
-//                oldItem: MovieRowInterface,
-//                newItem: MovieRowInterface
-//            ): Boolean =
-//                oldItem.getBEndId() == newItem.getBEndId()
-//
-////            override fun getChangePayload(oldItem: MovieRowInterface, newItem: MovieRowInterface): Any? {
-////                return if (sameExceptScore(oldItem, newItem)) {
-////                    PAYLOAD_SCORE
-////                } else {
-////                    null
-////                }
-////            }
-//        }
-//
-////        private fun sameExceptScore(oldItem: MovieRowInterface, newItem: MovieRowInterface): Boolean {
-////            // DON'T do this copy in a real app, it is just convenient here for the demo :)
-////            // because reddit randomizes scores, we want to pass it as a payload to minimize
-////            // UI updates between refreshes
-////            return oldItem.copy(score = newItem.score) == newItem
-////        }
-//    }
 
 }

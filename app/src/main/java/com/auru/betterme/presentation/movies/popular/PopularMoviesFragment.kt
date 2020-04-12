@@ -24,7 +24,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 
-class PopularMoviesFragmentExt : Fragment() {
+class PopularMoviesFragment : Fragment() {
 
     private val viewModel: MovieViewModel by viewModels {
         object : AbstractSavedStateViewModelFactory(this, null) {
@@ -115,7 +115,7 @@ class PopularMoviesFragmentExt : Fragment() {
 
     private fun initAdapter() {
         val adapter =
-            MoviePagedListAdapter2<Movie>(
+            MoviePagedListAdapter<Movie>(
                 movieItemClickListener,
                 this
             ) {
@@ -156,6 +156,6 @@ class PopularMoviesFragmentExt : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() =
-            PopularMoviesFragmentExt()
+            PopularMoviesFragment()
     }
 }

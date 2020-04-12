@@ -79,7 +79,7 @@ class MoviesBoundaryCallback(
         coroutineScope.launch {
             try {
                 networkState.postValue(NetworkState.LOADING)
-                val pageNumberToLoad = if (lastDbMovieId == 0) BE_API_START_POSITION else lastDbMovieId / DbRedditPostRepository.DEFAULT_NETWORK_PAGE_SIZE + 1
+                val pageNumberToLoad = if (lastDbMovieId == 0) BE_API_START_POSITION else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
                 Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
                 val popularMovies =  TmdbApi(API_KEY).movies.getPopularMovies(
                     API_LANGUAGE,
