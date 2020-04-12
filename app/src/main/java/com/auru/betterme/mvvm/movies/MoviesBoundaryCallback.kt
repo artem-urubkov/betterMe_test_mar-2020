@@ -40,7 +40,6 @@ import kotlinx.coroutines.launch
  */
 class MoviesBoundaryCallback(
     private val coroutineScope: CoroutineScope,
-//    private val handleResponse: (String, RedditApi.ListingResponse?) -> Unit,
     private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit
 ) : PagedList.BoundaryCallback<Movie>() {
 
@@ -62,8 +61,6 @@ class MoviesBoundaryCallback(
         Log.d(LOG_TAG, "onZeroItemsLoaded()")
 
         loadMovies(0)
-
-        //TODO need to remember total movies number?
     }
 
     /**

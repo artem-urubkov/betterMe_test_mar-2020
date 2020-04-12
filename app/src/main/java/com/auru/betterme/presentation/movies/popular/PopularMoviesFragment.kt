@@ -58,24 +58,6 @@ class PopularMoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val adapter =
-//            MoviePagedListAdapter<Movie>(
-//                movieItemClickListener,
-//                this
-//            )
-//        recyclerView.adapter = adapter
-//        viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
-//
-//        swipe_refresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-//            errorSnackbar?.let {
-//                if (it.isShown) {
-//                    it.dismiss()
-//                }
-//            }
-//            swipe_refresh.isRefreshing = false
-//            viewModel.getMovies()
-//        })
-
         initAdapter()
         initSwipeToRefresh()
     }
@@ -94,24 +76,24 @@ class PopularMoviesFragment : Fragment() {
         }
     }
 
-    private fun showErrorSnackBar(message: String) {
-        errorSnackbar =
-            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
-
-        errorSnackbar?.apply {
-            setAction(R.string.close) {}
-            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
-                .show()
-        }
-    }
-
-    private fun hideErrorSnackBar() {
-        errorSnackbar?.let {
-            if (it.isShown) {
-                it.dismiss()
-            }
-        }
-    }
+//    private fun showErrorSnackBar(message: String) {
+//        errorSnackbar =
+//            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
+//
+//        errorSnackbar?.apply {
+//            setAction(R.string.close) {}
+//            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
+//                .show()
+//        }
+//    }
+//
+//    private fun hideErrorSnackBar() {
+//        errorSnackbar?.let {
+//            if (it.isShown) {
+//                it.dismiss()
+//            }
+//        }
+//    }
 
     private fun initAdapter() {
         val adapter =
@@ -142,9 +124,9 @@ class PopularMoviesFragment : Fragment() {
     private fun initSwipeToRefresh() {
         viewModel.refreshState.observe(viewLifecycleOwner, Observer {
             val isLoading = it == NetworkState.LOADING
-            if(isLoading) {
-                hideErrorSnackBar()
-            }
+//            if(isLoading) {
+//                hideErrorSnackBar()
+//            }
             swipe_refresh.isRefreshing = isLoading
         })
         swipe_refresh.setOnRefreshListener {

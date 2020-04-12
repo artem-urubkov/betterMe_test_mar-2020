@@ -70,7 +70,7 @@ class MoviesRepositoryImpl(
             val moviesDb = moviesResultsPage.results.asSequence().filterNotNull()
                 .filter { item -> MoviesMapperAndValidator.isValid(item) }
 
-           val movies= moviesDb.mapIndexed { index, item ->
+            val movies = moviesDb.mapIndexed { index, item ->
                 MoviesMapperAndValidator.convertMovieDBToMovie(
                     item,
                     lastMovieDbId + index + 1
@@ -98,7 +98,8 @@ class MoviesRepositoryImpl(
         networkState.postValue(NetworkState.LOADING)
         getFreshScope().launch {
             try {
-                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_POSITION)
+                val popularMovies =
+                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_POSITION)
                 DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
                 withContext(Dispatchers.IO) {
                     db.runInTransaction {
@@ -116,7 +117,7 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Returns a Listing for the given subreddit.
+     * Returns a Listing for the page following the given "movieDbId"
      */
     @MainThread
     override fun getMovies(movieDbId: Int, pageSize: Int): Listing<Movie> {
@@ -134,6 +135,7 @@ class MoviesRepositoryImpl(
             refreshData()
         }
 
+        //threading is corect here, because .toLiveData() contains fetchExecutor: Executor = ArchTaskExecutor.getIOThreadExecutor()
         // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
         val livePagedList = movieDao.findAll().toLiveData(
             pageSize = pageSize,
@@ -144,8 +146,9 @@ class MoviesRepositoryImpl(
             pagedList = livePagedList,
             networkState = boundaryCallback.networkState,
             retry = {
-                //TODO
-//                boundaryCallback.helper.retryAllFailed()
+                livePagedList?.value?.last()?.let{
+                    boundaryCallback.onItemAtEndLoaded(it)
+                }
             },
             refresh = {
                 refreshTrigger.value = null
