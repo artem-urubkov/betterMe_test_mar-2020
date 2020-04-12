@@ -25,9 +25,7 @@ import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.Listing
 import com.auru.betterme.mvvm.NetworkState
 import androidx.paging.toLiveData
-import com.auru.betterme.API_KEY
-import com.auru.betterme.API_LANGUAGE
-import com.auru.betterme.BE_API_START_POSITION
+import com.auru.betterme.*
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.domain.MoviesMapperAndValidator
 import info.movito.themoviedbapi.TmdbApi
@@ -46,7 +44,7 @@ class MoviesRepositoryImpl(
 
     companion object {
         val LOG_TAG = MoviesRepositoryImpl::class.java.simpleName
-        var DEFAULT_NETWORK_PAGE_SIZE = 20
+        var DEFAULT_NETWORK_PAGE_SIZE = BE_API_ITEMS_ON_PAGE
     }
 
     private val job = SupervisorJob()
@@ -99,14 +97,14 @@ class MoviesRepositoryImpl(
         getFreshScope().launch {
             try {
                 val popularMovies =
-                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_POSITION)
+                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_PAGE_NUMBER)
                 DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
                 withContext(Dispatchers.IO) {
                     db.runInTransaction {
                         movieDao.deleteAll()
                     }
                 }
-                insertMoviesIntoDb(0, popularMovies)
+                insertMoviesIntoDb(START_MOVIE_DB_ID, popularMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.error(e, null))
@@ -115,6 +113,9 @@ class MoviesRepositoryImpl(
         }
         return networkState
     }
+
+
+    //TODO migrate to WorkManager here when have time
 
     /**
      * Returns a Listing for the page following the given "movieDbId"
@@ -146,8 +147,16 @@ class MoviesRepositoryImpl(
             pagedList = livePagedList,
             networkState = boundaryCallback.networkState,
             retry = {
-                livePagedList?.value?.last()?.let{
-                    boundaryCallback.onItemAtEndLoaded(it)
+                livePagedList?.value?.let {
+                    var lastLoadedMovie = Movie(id = START_MOVIE_DB_ID)
+                    if(it.isNotEmpty()) {
+                        it.last()?.let {
+                            lastLoadedMovie = it
+                        }
+                    }
+                    boundaryCallback.onItemAtEndLoaded(lastLoadedMovie)
+                } ?: run {
+                    refreshTrigger.value = null
                 }
             },
             refresh = {

@@ -2,6 +2,7 @@ package com.auru.betterme.injection
 
 import android.content.Context
 import androidx.room.Room
+import com.auru.betterme.database.DATA_BASE_NAME
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.MovieDao
 import com.auru.betterme.database.MoviesDatabase
@@ -23,7 +24,7 @@ open class DataModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@AppContext context: Context): MoviesDatabase =
-        Room.databaseBuilder(context, MoviesDatabase::class.java, "movies")
+        Room.databaseBuilder(context, MoviesDatabase::class.java, DATA_BASE_NAME)
             .build()
 
     @Provides

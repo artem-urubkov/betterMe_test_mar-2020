@@ -10,11 +10,11 @@ import androidx.room.PrimaryKey
 data class Movie(
     @PrimaryKey
     val id: Int,
-    val backEndId: Int,
-    val name: String,
-    val overview: String?,
-    val posterPath: String?,
-    val releaseDate: String?
+    val backEndId: Int = -1,
+    val name: String = "",
+    val overview: String? = null,
+    val posterPath: String? = null,
+    val releaseDate: String? = null
 ) : MovieInterface {
     override fun getBEndId(): Int = backEndId
 }

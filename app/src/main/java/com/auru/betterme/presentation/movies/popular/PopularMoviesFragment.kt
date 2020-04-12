@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
@@ -39,13 +38,7 @@ class PopularMoviesFragment : Fragment() {
         }
     }
 
-    //added recView
-    //added paging library
-    //added retrieving from DB
-
-    //TODO process exceptions
-
-    private var errorSnackbar: Snackbar? = null
+    private var errorSnackbar: Snackbar? = null //it is to be used to lead user to settings in case of WiFi absence //TODO apply also WorkManager here?
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,7 +109,7 @@ class PopularMoviesFragment : Fragment() {
             }
         })
         viewModel.networkState.observe(viewLifecycleOwner, Observer {
-            //TODO use also errorSnackbar
+            //TODO use also errorSnackbar for Internet connection lost error
             adapter.setNetworkState(it)
         })
     }

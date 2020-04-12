@@ -1,6 +1,7 @@
 package com.auru.betterme.presentation.movies
 
 import androidx.paging.Config
+import com.auru.betterme.BE_API_ITEMS_ON_PAGE
 
 class PagingConfig {
     companion object{
@@ -14,7 +15,7 @@ class PagingConfig {
          * user scrolling on a large device is expected to scroll through items more quickly
          * than a small device, such as when the large device uses a grid layout of items.
          */
-        pageSize = 20,
+        pageSize = BE_API_ITEMS_ON_PAGE,
 
         /**
          * If placeholders are enabled, PagedList will report the full size but some items might

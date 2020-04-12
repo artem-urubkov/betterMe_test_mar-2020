@@ -1,7 +1,6 @@
 package com.auru.betterme.presentation.movies.popular
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.paging.PagedListAdapter
@@ -57,21 +56,6 @@ class MoviePagedListAdapter<T : MovieInterface>(
             )
         }
     }
-
-//    override fun onBindViewHolder(
-//        holder: RecyclerView.ViewHolder,
-//        position: Int,
-//        payloads: MutableList<Any>
-//    ) {
-//        if (payloads.isNotEmpty()) {
-//            val item = getItem(position)
-//            Log.e(LOG_TAG, "onBindViewHolder(), payloads.isNotEmpty()")
-////            (holder as MovieViewHolder).updateScore(item)
-//        } else {
-//            onBindViewHolder(holder, position)
-//        }
-//    }
-
 
     private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
 

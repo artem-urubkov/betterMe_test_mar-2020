@@ -22,7 +22,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.auru.betterme.API_KEY
 import com.auru.betterme.API_LANGUAGE
-import com.auru.betterme.BE_API_START_POSITION
+import com.auru.betterme.BE_API_START_PAGE_NUMBER
+import com.auru.betterme.START_MOVIE_DB_ID
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.NetworkState
 import info.movito.themoviedbapi.TmdbApi
@@ -50,9 +51,6 @@ class MoviesBoundaryCallback(
     val networkState = MutableLiveData<NetworkState>()
 
 
-//    report.hasRunning() -> liveData.postValue(NetworkState.LOADING)
-//    report.hasError() -> liveData.postValue(
-//    NetworkState.error(getErrorMessage(report)))
     /**
      * Database returned 0 items. We should query the backend for more items.
      */
@@ -60,7 +58,7 @@ class MoviesBoundaryCallback(
     override fun onZeroItemsLoaded() {
         Log.d(LOG_TAG, "onZeroItemsLoaded()")
 
-        loadMovies(0)
+        loadMovies(START_MOVIE_DB_ID)
     }
 
     /**
@@ -76,9 +74,10 @@ class MoviesBoundaryCallback(
         coroutineScope.launch {
             try {
                 networkState.postValue(NetworkState.LOADING)
-                val pageNumberToLoad = if (lastDbMovieId == 0) BE_API_START_POSITION else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
+                val pageNumberToLoad =
+                    if (lastDbMovieId == START_MOVIE_DB_ID) BE_API_START_PAGE_NUMBER else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
                 Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
-                val popularMovies =  TmdbApi(API_KEY).movies.getPopularMovies(
+                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(
                     API_LANGUAGE,
                     pageNumberToLoad
                 )
@@ -86,6 +85,7 @@ class MoviesBoundaryCallback(
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 if (isActive) { //we should not to process JobCancellationException
+                    //TODO add some converter to convert errors to user-friendly messages
                     networkState.postValue(NetworkState.error(e, null))
                 }
             }
@@ -96,39 +96,5 @@ class MoviesBoundaryCallback(
     override fun onItemAtFrontLoaded(itemAtFront: Movie) {
         // ignored, since we only ever append to what's in the DB
     }
-
-//    private fun createWebserviceCallback(it: PagingRequestHelper.Request.Callback)
-//            : Callback<RedditApi.ListingResponse> {
-//        return object : Callback<RedditApi.ListingResponse> {
-//            override fun onFailure(
-//                call: Call<RedditApi.ListingResponse>,
-//                t: Throwable
-//            ) {
-//                it.recordFailure(t)
-//            }
-//
-//            override fun onResponse(
-//                call: Call<RedditApi.ListingResponse>,
-//                response: Response<RedditApi.ListingResponse>
-//            ) {
-//                insertItemsIntoDb(response, it)
-//            }
-//        }
-//    }
-//
-//
-//    fun PagingRequestHelper.createStatusLiveData(): LiveData<NetworkState> {
-//        val liveData = MutableLiveData<NetworkState>()
-//        addListener { report ->
-//            when {
-//                report.hasRunning() -> liveData.postValue(NetworkState.LOADING)
-//                report.hasError() -> liveData.postValue(
-//                    NetworkState.error(getErrorMessage(report))
-//                )
-//                else -> liveData.postValue(NetworkState.LOADED)
-//            }
-//        }
-//        return liveData
-//    }
 
 }

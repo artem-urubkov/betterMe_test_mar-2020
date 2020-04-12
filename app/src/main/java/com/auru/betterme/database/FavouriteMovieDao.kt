@@ -16,8 +16,9 @@ interface FavouriteMovieDao {
     @Query("SELECT * FROM favour_movies")
     fun findAll(): DataSource.Factory<Int, FavouriteMovie>
 
-    @Query("UPDATE favour_movies SET id = (SELECT movies.id FROM movies WHERE movies.backEndId = favour_movies.backEndId ), name = (SELECT movies.name FROM movies WHERE movies.backEndId = favour_movies.backEndId ),overview = (SELECT movies.overview FROM movies WHERE movies.backEndId = favour_movies.backEndId ), posterPath = (SELECT movies.posterPath FROM movies WHERE movies.backEndId = favour_movies.backEndId ), releaseDate = (SELECT movies.releaseDate FROM movies WHERE movies.backEndId = favour_movies.backEndId ) WHERE EXISTS (SELECT * FROM movies WHERE movies.backEndId = favour_movies.backEndId)")
-    fun updateFavouritesByFreshMovies()
+    //TODO if requirements changed, use this method again
+//    @Query("UPDATE favour_movies SET id = (SELECT movies.id FROM movies WHERE movies.backEndId = favour_movies.backEndId ), name = (SELECT movies.name FROM movies WHERE movies.backEndId = favour_movies.backEndId ),overview = (SELECT movies.overview FROM movies WHERE movies.backEndId = favour_movies.backEndId ), posterPath = (SELECT movies.posterPath FROM movies WHERE movies.backEndId = favour_movies.backEndId ), releaseDate = (SELECT movies.releaseDate FROM movies WHERE movies.backEndId = favour_movies.backEndId ) WHERE EXISTS (SELECT * FROM movies WHERE movies.backEndId = favour_movies.backEndId)")
+//    fun updateFavouritesByFreshMovies()
 
     @Insert
     fun insert(movie: FavouriteMovie)

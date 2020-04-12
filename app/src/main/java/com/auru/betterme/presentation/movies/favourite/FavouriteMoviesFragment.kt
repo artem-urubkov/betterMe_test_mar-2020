@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.MovieInterface
@@ -18,9 +17,6 @@ import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
 class FavouriteMoviesFragment : Fragment() {
 
     private val viewModel by viewModels<FavouriteMoviesViewModel>()
-
-    //added recView
-    //added paging library
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,10 +37,10 @@ class FavouriteMoviesFragment : Fragment() {
         recyclerView.adapter = adapter
         viewModel.allMovies.observe(viewLifecycleOwner) { pagedList -> adapter.submitList(pagedList) }
 
-        swipe_refresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+        swipe_refresh.setOnRefreshListener {
             //just show user that the list is always up-to-date
             swipe_refresh.isRefreshing = false
-        })
+        }
     }
 
 
