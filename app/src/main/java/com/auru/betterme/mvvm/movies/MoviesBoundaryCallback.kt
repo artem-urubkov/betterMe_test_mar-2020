@@ -21,13 +21,13 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.auru.betterme.API_KEY
-import com.auru.betterme.API_LANGUAGE
 import com.auru.betterme.BE_API_START_PAGE_NUMBER
 import com.auru.betterme.START_MOVIE_DB_ID
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.NetworkState
-import info.movito.themoviedbapi.TmdbApi
-import info.movito.themoviedbapi.model.core.MovieResultsPage
+import com.omertron.themoviedbapi.TheMovieDbApi
+import com.omertron.themoviedbapi.model.movie.MovieBasic
+import com.omertron.themoviedbapi.results.ResultList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -41,7 +41,9 @@ import kotlinx.coroutines.launch
  */
 class MoviesBoundaryCallback(
     private val coroutineScope: CoroutineScope,
-    private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit
+    private val handleResponse: suspend (Int /*lastMovieDbId*/, ResultList<MovieBasic>) -> Unit
+//    ,
+//    private val movieDbApi: TheMovieDbApi
 ) : PagedList.BoundaryCallback<Movie>() {
 
     companion object {
@@ -76,12 +78,13 @@ class MoviesBoundaryCallback(
                 networkState.postValue(NetworkState.LOADING)
                 val pageNumberToLoad =
                     if (lastDbMovieId == START_MOVIE_DB_ID) BE_API_START_PAGE_NUMBER else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
+                val recentMovies = TheMovieDbApi(API_KEY).getDiscoverMovies(MoviesRepositoryImpl.getDiscoverParams())
                 Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
-                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(
-                    API_LANGUAGE,
-                    pageNumberToLoad
-                )
-                handleResponse(lastDbMovieId, popularMovies)
+//                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(
+//                    API_LANGUAGE,
+//                    pageNumberToLoad
+//                )
+                handleResponse(lastDbMovieId, recentMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 if (isActive) { //we should not to process JobCancellationException

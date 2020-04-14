@@ -1,0 +1,16 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "org.apache.commons:commons-lang3:3.7"
+    implementation "org.slf4j:slf4j-api:1.7.16"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.10.0"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+    implementation "org.yamj:api-common:2.0"
+
+}
+
+sourceCompatibility = "7"
+targetCompatibility = "7"

@@ -28,10 +28,14 @@ import androidx.paging.toLiveData
 import com.auru.betterme.*
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.domain.MoviesMapperAndValidator
-import info.movito.themoviedbapi.TmdbApi
-import info.movito.themoviedbapi.model.core.MovieResultsPage
+import com.omertron.themoviedbapi.TheMovieDbApi
+import com.omertron.themoviedbapi.model.discover.Discover
+import com.omertron.themoviedbapi.model.movie.MovieBasic
+import com.omertron.themoviedbapi.results.ResultList
 import kotlinx.coroutines.*
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Repository implementation that uses a database PagedList + a boundary callback to return a
@@ -40,11 +44,26 @@ import java.lang.Exception
 class MoviesRepositoryImpl(
     private val db: MoviesDatabase,
     private val movieDao: MovieDao
+//    ,
+//    private val movieDbApi: TheMovieDbApi
 ) : MoviesRepository {
 
     companion object {
         val LOG_TAG = MoviesRepositoryImpl::class.java.simpleName
         var DEFAULT_NETWORK_PAGE_SIZE = BE_API_ITEMS_ON_PAGE
+
+        fun getDiscoverParams(): Discover {
+            val formatter = SimpleDateFormat(DATE_FORMAT, DEFAULT_LOCALE)
+            val now = Date()
+            val twoWeeksAgo = Date(now.time - TWO_WEEKS_MILLIS)
+            val nowDateFormatted = formatter.format(now)
+            val twoWeeksAgoDateFormatted = formatter.format(twoWeeksAgo)
+            return Discover()
+                .language(API_LANGUAGE)
+                .releaseDateGte(twoWeeksAgoDateFormatted)
+                .releaseDateLte(nowDateFormatted)
+                .page(BE_API_START_PAGE_NUMBER)
+        }
     }
 
     private val job = SupervisorJob()
@@ -55,13 +74,14 @@ class MoviesRepositoryImpl(
         return coroutineScope
     }
 
+
     /**
      * every time it gets new items, boundary callback simply inserts them into the database and
      * paging library takes care of refreshing the list if necessary.
      */
     private suspend fun insertMoviesIntoDb(
         lastMovieDbId: Int,
-        moviesResultsPage: MovieResultsPage
+        moviesResultsPage: ResultList<MovieBasic>
     ) {
         withContext(Dispatchers.IO) {
             val moviesToPersist = mutableListOf<Movie>()
@@ -69,7 +89,7 @@ class MoviesRepositoryImpl(
                 .filter { item -> MoviesMapperAndValidator.isValid(item) }
 
             val movies = moviesDb.mapIndexed { index, item ->
-                MoviesMapperAndValidator.convertMovieDBToMovie(
+                MoviesMapperAndValidator.convertMovieBasicDBToMovie(
                     item,
                     lastMovieDbId + index + 1
                 )
@@ -96,15 +116,16 @@ class MoviesRepositoryImpl(
         networkState.postValue(NetworkState.LOADING)
         getFreshScope().launch {
             try {
-                val popularMovies =
-                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_PAGE_NUMBER)
-                DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
+                val recentMovies = TheMovieDbApi(API_KEY).getDiscoverMovies(getDiscoverParams())
+//                val popularMovies =
+//                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_PAGE_NUMBER)
+                DEFAULT_NETWORK_PAGE_SIZE = recentMovies.totalResults
                 withContext(Dispatchers.IO) {
                     db.runInTransaction {
                         movieDao.deleteAll()
                     }
                 }
-                insertMoviesIntoDb(START_MOVIE_DB_ID, popularMovies)
+                insertMoviesIntoDb(START_MOVIE_DB_ID, recentMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.error(e, null))
@@ -127,6 +148,8 @@ class MoviesRepositoryImpl(
         val boundaryCallback = MoviesBoundaryCallback(
             coroutineScope = coroutineScope,
             handleResponse = this::insertMoviesIntoDb
+//            ,
+//            movieDbApi = TheMovieDbApi(API_KEY)
         )
         // we are using a mutable live data to trigger refresh requests which eventually calls
         // refresh method and gets a new live data. Each refresh request by the user becomes a newly
@@ -149,7 +172,7 @@ class MoviesRepositoryImpl(
             retry = {
                 livePagedList?.value?.let {
                     var lastLoadedMovie = Movie(id = START_MOVIE_DB_ID)
-                    if(it.isNotEmpty()) {
+                    if (it.isNotEmpty()) {
                         it.last()?.let {
                             lastLoadedMovie = it
                         }

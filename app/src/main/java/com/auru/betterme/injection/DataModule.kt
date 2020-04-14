@@ -2,6 +2,7 @@ package com.auru.betterme.injection
 
 import android.content.Context
 import androidx.room.Room
+import com.auru.betterme.API_KEY
 import com.auru.betterme.database.DATA_BASE_NAME
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.MovieDao
@@ -9,6 +10,7 @@ import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.mvvm.movies.MoviesRepositoryImpl
 import com.auru.betterme.mvvm.movies.MoviesRepository
 import com.auru.betterme.utils.CoroutineContextProvider
+import com.omertron.themoviedbapi.TheMovieDbApi
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -37,10 +39,18 @@ open class DataModule {
     fun provideFavouriteMovieDao(database: MoviesDatabase): FavouriteMovieDao =
         database.favouriteMovieDao()
 
+//    @Provides
+//    @Singleton
+//    fun provideMovieDbApi(): TheMovieDbApi = TheMovieDbApi(API_KEY)
+
     @Provides
     @Singleton
     fun provideRedditPostRepository(
         database: MoviesDatabase,
         movieDao: MovieDao
-    ): MoviesRepository = MoviesRepositoryImpl(database, movieDao)
+//        ,
+//        movieDbApi: TheMovieDbApi
+    ): MoviesRepository = MoviesRepositoryImpl(database, movieDao/*, movieDbApi*/)
+
+
 }
