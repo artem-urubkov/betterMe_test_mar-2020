@@ -40,7 +40,8 @@ open class DataModule {
     @Provides
     @Singleton
     fun provideRedditPostRepository(
+        @AppContext context: Context,
         database: MoviesDatabase,
         movieDao: MovieDao
-    ): MoviesRepository = MoviesRepositoryImpl(database, movieDao)
+    ): MoviesRepository = MoviesRepositoryImpl(context, database, movieDao)
 }

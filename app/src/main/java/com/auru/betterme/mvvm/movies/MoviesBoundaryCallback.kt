@@ -16,18 +16,14 @@
 
 package com.auru.betterme.mvvm.movies
 
+import android.content.Context
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
-import com.auru.betterme.network.API_KEY
-import com.auru.betterme.network.API_LANGUAGE
-import com.auru.betterme.network.BE_API_START_PAGE_NUMBER
-import com.auru.betterme.network.START_MOVIE_DB_ID
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.NetworkState
-import com.auru.betterme.network.TmdbApiExt
-import com.auru.betterme.network.TmdbMoviesExt
+import com.auru.betterme.network.*
 import info.movito.themoviedbapi.model.core.MovieResultsPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -41,6 +37,7 @@ import kotlinx.coroutines.launch
  * rate limiting using the PagingRequestHelper class.
  */
 class MoviesBoundaryCallback(
+    private val context: Context,
     private val coroutineScope: CoroutineScope,
     private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit
 ) : PagedList.BoundaryCallback<Movie>() {
@@ -50,6 +47,10 @@ class MoviesBoundaryCallback(
     }
 
     val networkState = MutableLiveData<NetworkState>()
+
+    init {
+
+    }
 
 
     /**
@@ -86,8 +87,9 @@ class MoviesBoundaryCallback(
 
             } catch (e: Exception) {
                 if (isActive) { //we should not to process JobCancellationException
-                    //TODO add some converter to convert errors to user-friendly messages
-                    networkState.postValue(NetworkState.error(e, null))
+                    val messageId  = NetworkDataConverter.convertRestErrorToMessageId(e)
+                    val message = context.getString(messageId)
+                    networkState.postValue(NetworkState.error(e, message))
                 }
             }
         }

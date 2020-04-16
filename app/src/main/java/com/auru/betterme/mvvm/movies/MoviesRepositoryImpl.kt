@@ -16,6 +16,7 @@
 
 package com.auru.betterme.mvvm.movies
 
+import android.content.Context
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -39,6 +40,7 @@ import java.util.*
  * listing that loads in pages.
  */
 class MoviesRepositoryImpl(
+    private val context: Context,
     private val db: MoviesDatabase,
     private val movieDao: MovieDao
 ) : MoviesRepository {
@@ -120,7 +122,9 @@ class MoviesRepositoryImpl(
                 }
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
-                networkState.postValue(NetworkState.error(e, null))
+                val messageId  = NetworkDataConverter.convertRestErrorToMessageId(e)
+                val message = context.getString(messageId)
+                networkState.postValue(NetworkState.error(e, message))
             }
 
         }
@@ -140,6 +144,7 @@ class MoviesRepositoryImpl(
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
         val boundaryCallback = MoviesBoundaryCallback(
+            context = context,
             coroutineScope = coroutineScope,
             handleResponse = this::insertMoviesIntoDb
         )
