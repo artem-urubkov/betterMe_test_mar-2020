@@ -19,9 +19,10 @@ import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.mvvm.NetworkState
 import com.auru.betterme.presentation.movies.MovieItemClickListener
-import com.google.android.material.snackbar.Snackbar
+import com.auru.betterme.utils.eventbusevents.ShareMovieEvent
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
+import org.greenrobot.eventbus.EventBus
 
 class PopularMoviesFragment : Fragment() {
 
@@ -38,7 +39,7 @@ class PopularMoviesFragment : Fragment() {
         }
     }
 
-    private var errorSnackbar: Snackbar? = null //it is to be used to lead user to settings in case of WiFi absence //TODO apply also WorkManager here?
+    //TODO apply also WorkManager here?
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,30 +64,14 @@ class PopularMoviesFragment : Fragment() {
                     R.id.add_to_favourites -> {
                         viewModel.addToFavourites(movie as Movie)
                     }
-//                  TODO R.id.share ->
+                    R.id.share -> {
+                        EventBus.getDefault().post(ShareMovieEvent((movie as Movie).backEndId))
+                    }
                 }
             }
         }
     }
 
-//    private fun showErrorSnackBar(message: String) {
-//        errorSnackbar =
-//            Snackbar.make(coordinator_layout, message, Snackbar.LENGTH_INDEFINITE)
-//
-//        errorSnackbar?.apply {
-//            setAction(R.string.close) {}
-//            setActionTextColor(ResourcesCompat.getColor(resources, R.color.yellow, null))
-//                .show()
-//        }
-//    }
-//
-//    private fun hideErrorSnackBar() {
-//        errorSnackbar?.let {
-//            if (it.isShown) {
-//                it.dismiss()
-//            }
-//        }
-//    }
 
     private fun initAdapter() {
         val adapter =

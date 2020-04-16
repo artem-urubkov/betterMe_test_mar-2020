@@ -11,8 +11,10 @@ import com.auru.betterme.R
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.MovieInterface
 import com.auru.betterme.presentation.movies.MovieItemClickListener
+import com.auru.betterme.utils.eventbusevents.ShareMovieEvent
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.android.synthetic.main.recycler_plus_empty_loading.*
+import org.greenrobot.eventbus.EventBus
 
 class FavouriteMoviesFragment : Fragment() {
 
@@ -52,7 +54,9 @@ class FavouriteMoviesFragment : Fragment() {
                     R.id.remove_from_favourites -> {
                         viewModel.removeFromFavourites((movie as FavouriteMovie))
                     }
-//                  TODO R.id.share ->
+                    R.id.share -> {
+                        EventBus.getDefault().post(ShareMovieEvent((movie as FavouriteMovie).backEndId))
+                    }
                 }
             }
         }
