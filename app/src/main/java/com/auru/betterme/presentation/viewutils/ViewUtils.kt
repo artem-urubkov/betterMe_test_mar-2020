@@ -1,6 +1,6 @@
 package com.auru.betterme.presentation.viewutils
 
-sealed class MovieHomepageResult {
-    data class Success(val data: Any) : MovieHomepageResult()
-    data class Failure(val errorMessage: String) : MovieHomepageResult()
+sealed class ResultSealed<out T> {
+    data class Success<out T>(val data: T) : ResultSealed<T>()
+    data class Failure<out T>(val errorMessage: String) : ResultSealed<T>()
 }
