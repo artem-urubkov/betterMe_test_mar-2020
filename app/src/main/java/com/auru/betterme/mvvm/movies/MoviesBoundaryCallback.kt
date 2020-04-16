@@ -20,13 +20,14 @@ import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
-import com.auru.betterme.API_KEY
-import com.auru.betterme.API_LANGUAGE
-import com.auru.betterme.BE_API_START_PAGE_NUMBER
-import com.auru.betterme.START_MOVIE_DB_ID
+import com.auru.betterme.network.API_KEY
+import com.auru.betterme.network.API_LANGUAGE
+import com.auru.betterme.network.BE_API_START_PAGE_NUMBER
+import com.auru.betterme.network.START_MOVIE_DB_ID
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.NetworkState
-import info.movito.themoviedbapi.TmdbApi
+import com.auru.betterme.network.TmdbApiExt
+import com.auru.betterme.network.TmdbMoviesExt
 import info.movito.themoviedbapi.model.core.MovieResultsPage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
@@ -77,12 +78,12 @@ class MoviesBoundaryCallback(
                 val pageNumberToLoad =
                     if (lastDbMovieId == START_MOVIE_DB_ID) BE_API_START_PAGE_NUMBER else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
                 Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
-                val popularMovies = TmdbApi(API_KEY).movies.getPopularMovies(
-                    API_LANGUAGE,
-                    pageNumberToLoad
-                )
-                handleResponse(lastDbMovieId, popularMovies)
+                val popularMovies = getMoviesApi().getMoviesByPeriod(API_LANGUAGE, pageNumberToLoad)
+                popularMovies?.let {
+                    handleResponse(lastDbMovieId, popularMovies)
+                }
                 networkState.postValue(NetworkState.LOADED)
+
             } catch (e: Exception) {
                 if (isActive) { //we should not to process JobCancellationException
                     //TODO add some converter to convert errors to user-friendly messages
@@ -91,6 +92,12 @@ class MoviesBoundaryCallback(
             }
         }
     }
+
+
+    /**
+     * invoke this from BG threads only! It's due to TmdbApi lib implementation
+     */
+    fun getMoviesApi(): TmdbMoviesExt = TmdbApiExt(API_KEY).getMoviesExt()
 
 
     override fun onItemAtFrontLoaded(itemAtFront: Movie) {

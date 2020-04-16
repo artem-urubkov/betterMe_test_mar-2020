@@ -1,6 +1,6 @@
 package com.auru.betterme.domain
 
-import com.auru.betterme.API_IMAGE_URL
+import com.auru.betterme.network.API_IMAGE_URL
 import com.auru.betterme.database.domain.FavouriteMovie
 import com.auru.betterme.database.domain.Movie
 import info.movito.themoviedbapi.model.MovieDb

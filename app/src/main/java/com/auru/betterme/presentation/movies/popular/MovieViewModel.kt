@@ -20,7 +20,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.auru.betterme.AndroidApp
-import com.auru.betterme.BE_API_ITEMS_ON_PAGE
+import com.auru.betterme.network.BE_API_ITEMS_ON_PAGE
 import com.auru.betterme.database.FavouriteMovieDao
 import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.domain.MoviesMapperAndValidator

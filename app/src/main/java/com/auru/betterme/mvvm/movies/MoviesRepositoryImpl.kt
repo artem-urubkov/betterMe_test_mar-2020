@@ -25,13 +25,14 @@ import com.auru.betterme.database.domain.Movie
 import com.auru.betterme.mvvm.Listing
 import com.auru.betterme.mvvm.NetworkState
 import androidx.paging.toLiveData
-import com.auru.betterme.*
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.domain.MoviesMapperAndValidator
-import info.movito.themoviedbapi.TmdbApi
+import com.auru.betterme.network.*
 import info.movito.themoviedbapi.model.core.MovieResultsPage
 import kotlinx.coroutines.*
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Repository implementation that uses a database PagedList + a boundary callback to return a
@@ -44,8 +45,12 @@ class MoviesRepositoryImpl(
 
     companion object {
         val LOG_TAG = MoviesRepositoryImpl::class.java.simpleName
-        var DEFAULT_NETWORK_PAGE_SIZE = BE_API_ITEMS_ON_PAGE
+        var DEFAULT_NETWORK_PAGE_SIZE =
+            BE_API_ITEMS_ON_PAGE
     }
+
+    private lateinit var nowDateFormatted: String
+    private lateinit var twoWeeksAgoDateFormatted: String
 
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Default + job)
@@ -94,17 +99,25 @@ class MoviesRepositoryImpl(
     private fun refreshData(): LiveData<NetworkState> {
         val networkState = MutableLiveData<NetworkState>()
         networkState.postValue(NetworkState.LOADING)
+
+        refreshMoviesRequestPeriod()
+
         getFreshScope().launch {
             try {
                 val popularMovies =
-                    TmdbApi(API_KEY).movies.getPopularMovies(API_LANGUAGE, BE_API_START_PAGE_NUMBER)
-                DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
-                withContext(Dispatchers.IO) {
-                    db.runInTransaction {
-                        movieDao.deleteAll()
+                    getMoviesApi().getMoviesByPeriod(
+                        API_LANGUAGE,
+                        BE_API_START_PAGE_NUMBER
+                    )
+                popularMovies?.let {
+                    DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
+                    withContext(Dispatchers.IO) {
+                        db.runInTransaction {
+                            movieDao.deleteAll()
+                        }
                     }
+                    insertMoviesIntoDb(START_MOVIE_DB_ID, popularMovies)
                 }
-                insertMoviesIntoDb(START_MOVIE_DB_ID, popularMovies)
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.error(e, null))
@@ -122,6 +135,8 @@ class MoviesRepositoryImpl(
      */
     @MainThread
     override fun getMovies(movieDbId: Int, pageSize: Int): Listing<Movie> {
+        refreshMoviesRequestPeriod()
+
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
         val boundaryCallback = MoviesBoundaryCallback(
@@ -149,7 +164,7 @@ class MoviesRepositoryImpl(
             retry = {
                 livePagedList?.value?.let {
                     var lastLoadedMovie = Movie(id = START_MOVIE_DB_ID)
-                    if(it.isNotEmpty()) {
+                    if (it.isNotEmpty()) {
                         it.last()?.let {
                             lastLoadedMovie = it
                         }
@@ -164,6 +179,23 @@ class MoviesRepositoryImpl(
             },
             refreshState = refreshState
         )
+    }
+
+    /**
+     * invoke this from BG threads only! It's due to TmdbApi lib implementation
+     */
+    fun getMoviesApi(): TmdbMoviesExt = TmdbApiExt(API_KEY).getMoviesExt()
+
+    override fun refreshMoviesRequestPeriod() {
+        val formatter = SimpleDateFormat(
+            DATE_FORMAT,
+            DEFAULT_LOCALE
+        )
+        val now = Date()
+        val twoWeeksAgo = Date(now.time - TWO_WEEKS_MILLIS)
+        val nowDateFormatted = formatter.format(now)
+        val twoWeeksAgoDateFormatted = formatter.format(twoWeeksAgo)
+        TmdbMoviesExt.setMoviesSearchPeriod(Pair(nowDateFormatted, twoWeeksAgoDateFormatted))
     }
 }
 

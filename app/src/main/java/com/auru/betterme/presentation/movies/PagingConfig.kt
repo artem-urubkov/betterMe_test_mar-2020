@@ -1,7 +1,7 @@
 package com.auru.betterme.presentation.movies
 
 import androidx.paging.Config
-import com.auru.betterme.BE_API_ITEMS_ON_PAGE
+import com.auru.betterme.network.BE_API_ITEMS_ON_PAGE
 
 class PagingConfig {
     companion object{
