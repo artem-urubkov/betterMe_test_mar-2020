@@ -8,6 +8,8 @@ import com.auru.betterme.database.MovieDao
 import com.auru.betterme.database.MoviesDatabase
 import com.auru.betterme.mvvm.movies.MoviesRepositoryImpl
 import com.auru.betterme.mvvm.movies.MoviesRepository
+import com.auru.betterme.network.NetworkMoviesHelper
+import com.auru.betterme.network.NetworkMoviesHelperImpl
 import com.auru.betterme.utils.CoroutineContextProvider
 import dagger.Module
 import dagger.Provides
@@ -39,9 +41,15 @@ open class DataModule {
 
     @Provides
     @Singleton
-    fun provideRedditPostRepository(
+    fun provideNetworkMoviesHelper(): NetworkMoviesHelper = NetworkMoviesHelperImpl()
+
+    @Provides
+    @Singleton
+    fun provideMoviesPostRepository(
         @AppContext context: Context,
         database: MoviesDatabase,
-        movieDao: MovieDao
-    ): MoviesRepository = MoviesRepositoryImpl(context, database, movieDao)
+        movieDao: MovieDao,
+        networkMoviesHelper: NetworkMoviesHelper
+    ): MoviesRepository = MoviesRepositoryImpl(context, database, movieDao, networkMoviesHelper)
+
 }

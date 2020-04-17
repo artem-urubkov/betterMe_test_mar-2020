@@ -39,7 +39,8 @@ import kotlinx.coroutines.launch
 class MoviesBoundaryCallback(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit
+    private val handleResponse: suspend (Int /*lastMovieDbId*/, MovieResultsPage) -> Unit,
+    private val networkMoviesHelper: NetworkMoviesHelper
 ) : PagedList.BoundaryCallback<Movie>() {
 
     companion object {
@@ -47,10 +48,6 @@ class MoviesBoundaryCallback(
     }
 
     val networkState = MutableLiveData<NetworkState>()
-
-    init {
-
-    }
 
 
     /**
@@ -79,10 +76,7 @@ class MoviesBoundaryCallback(
                 val pageNumberToLoad =
                     if (lastDbMovieId == START_MOVIE_DB_ID) BE_API_START_PAGE_NUMBER else lastDbMovieId / MoviesRepositoryImpl.DEFAULT_NETWORK_PAGE_SIZE + 1
                 Log.d(LOG_TAG, "loadMovies(), pageNumberToLoad=$pageNumberToLoad")
-                val popularMovies = getMoviesApi().getMoviesByPeriod(API_LANGUAGE, pageNumberToLoad)
-                popularMovies?.let {
-                    handleResponse(lastDbMovieId, popularMovies)
-                }
+                networkMoviesHelper.getTwoWeeksMovies(pageNumberToLoad, lastDbMovieId) { lastDbMovieId, twoWeeksMovies -> handleResponse(lastDbMovieId, twoWeeksMovies)}
                 networkState.postValue(NetworkState.LOADED)
 
             } catch (e: Exception) {
@@ -94,12 +88,6 @@ class MoviesBoundaryCallback(
             }
         }
     }
-
-
-    /**
-     * invoke this from BG threads only! It's due to TmdbApi lib implementation
-     */
-    fun getMoviesApi(): TmdbMoviesExt = TmdbApiExt(API_KEY).getMoviesExt()
 
 
     override fun onItemAtFrontLoaded(itemAtFront: Movie) {

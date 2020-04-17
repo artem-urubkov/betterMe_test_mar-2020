@@ -42,7 +42,8 @@ import java.util.*
 class MoviesRepositoryImpl(
     private val context: Context,
     private val db: MoviesDatabase,
-    private val movieDao: MovieDao
+    private val movieDao: MovieDao,
+    private val networkMoviesHelper: NetworkMoviesHelper
 ) : MoviesRepository {
 
     companion object {
@@ -51,8 +52,6 @@ class MoviesRepositoryImpl(
             BE_API_ITEMS_ON_PAGE
     }
 
-    private lateinit var nowDateFormatted: String
-    private lateinit var twoWeeksAgoDateFormatted: String
 
     private val job = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.Default + job)
@@ -106,19 +105,15 @@ class MoviesRepositoryImpl(
 
         getFreshScope().launch {
             try {
-                val popularMovies =
-                    getMoviesApi().getMoviesByPeriod(
-                        API_LANGUAGE,
-                        BE_API_START_PAGE_NUMBER
-                    )
-                popularMovies?.let {
-                    DEFAULT_NETWORK_PAGE_SIZE = popularMovies.results.size
+                networkMoviesHelper.getTwoWeeksMovies(BE_API_START_PAGE_NUMBER, START_MOVIE_DB_ID) {
+                        _, twoWeeksMovies ->
+                    DEFAULT_NETWORK_PAGE_SIZE = twoWeeksMovies.results.size
                     withContext(Dispatchers.IO) {
                         db.runInTransaction {
                             movieDao.deleteAll()
                         }
                     }
-                    insertMoviesIntoDb(START_MOVIE_DB_ID, popularMovies)
+                    insertMoviesIntoDb(START_MOVIE_DB_ID, twoWeeksMovies)
                 }
                 networkState.postValue(NetworkState.LOADED)
             } catch (e: Exception) {
@@ -146,7 +141,8 @@ class MoviesRepositoryImpl(
         val boundaryCallback = MoviesBoundaryCallback(
             context = context,
             coroutineScope = coroutineScope,
-            handleResponse = this::insertMoviesIntoDb
+            handleResponse = this::insertMoviesIntoDb,
+            networkMoviesHelper = networkMoviesHelper
         )
         // we are using a mutable live data to trigger refresh requests which eventually calls
         // refresh method and gets a new live data. Each refresh request by the user becomes a newly
@@ -185,11 +181,6 @@ class MoviesRepositoryImpl(
             refreshState = refreshState
         )
     }
-
-    /**
-     * invoke this from BG threads only! It's due to TmdbApi lib implementation
-     */
-    fun getMoviesApi(): TmdbMoviesExt = TmdbApiExt(API_KEY).getMoviesExt()
 
     override fun refreshMoviesRequestPeriod() {
         val formatter = SimpleDateFormat(
